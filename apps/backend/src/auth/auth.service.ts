@@ -12,13 +12,17 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto) {
-    const databaseUser = await this.findDatabaseUser(dto).catch(() => null);
+    const credentials = {
+      email: dto.email.trim().toLowerCase(),
+      password: dto.password
+    };
+    const databaseUser = await this.findDatabaseUser(credentials).catch(() => null);
 
     if (databaseUser) {
       return this.createLoginResponse(databaseUser);
     }
 
-    const demoUser = this.findDemoUser(dto);
+    const demoUser = this.findDemoUser(credentials);
 
     if (!demoUser) {
       throw new UnauthorizedException("Invalid credentials");
