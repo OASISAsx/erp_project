@@ -5,7 +5,6 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography, message } from "antd";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import styles from "@/app/login/page.module.scss";
 
 type LoginForm = {
@@ -14,7 +13,6 @@ type LoginForm = {
 };
 
 export default function LoginAntdPanel() {
-  const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: LoginForm) => {
@@ -25,8 +23,7 @@ export default function LoginAntdPanel() {
 
     if (result?.ok) {
       messageApi.success("เข้าสู่ระบบสำเร็จ");
-      router.push("/main-menu");
-      router.refresh();
+      window.location.assign("/main-menu");
       return;
     }
 

@@ -5,7 +5,6 @@ import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography, message } from "antd";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import styles from "@/app/login/page.module.scss";
 
 type RegisterForm = {
@@ -16,7 +15,6 @@ type RegisterForm = {
 };
 
 export default function RegisterAntdPanel() {
-  const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: RegisterForm) => {
@@ -47,13 +45,12 @@ export default function RegisterAntdPanel() {
 
     if (signInResult?.ok) {
       messageApi.success("สมัครสมาชิกสำเร็จ");
-      router.push("/main-menu");
-      router.refresh();
+      window.location.assign("/main-menu");
       return;
     }
 
     messageApi.success("สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ");
-    router.push("/login");
+    window.location.assign("/login");
   };
 
   return (
