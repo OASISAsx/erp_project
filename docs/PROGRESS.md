@@ -45,6 +45,7 @@
   - Create departments
   - Assign users to departments
   - Set which main menus each department can view
+  - Uses Axios API client and Zustand store with shared admin types
 - Built backend base:
   - NestJS bootstrap
   - CORS for frontend

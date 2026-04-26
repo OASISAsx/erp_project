@@ -1,7 +1,7 @@
 "use client";
 
 import "@ant-design/v5-patch-for-react-19";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import {
   AppstoreOutlined,
   LogoutOutlined,
@@ -9,6 +9,7 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import {
+  Alert,
   Avatar,
   Button,
   Checkbox,
@@ -25,158 +26,82 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useUserMenuPermissionStore } from "@/stores/userMenuPermissionStore";
+import type { DepartmentForm, UserRow } from "@/types/admin";
 import styles from "./page.module.scss";
-
-type Department = {
-  id: string;
-  code: string;
-  name: string;
-  description?: string | null;
-};
-
-type UserRow = {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  departmentId?: string | null;
-  departmentName?: string | null;
-  isActive: boolean;
-};
-
-type MenuPermission = {
-  key: string;
-  label: string;
-  description: string;
-  canView: boolean;
-};
-
-type DepartmentForm = {
-  code: string;
-  name: string;
-};
 
 export default function UserMenuPermissionsPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm<DepartmentForm>();
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [menuPermissions, setMenuPermissions] = useState<MenuPermission[]>([]);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>();
-  const [saving, setSaving] = useState(false);
+  const {
+    departments,
+    users,
+    menuPermissions,
+    selectedDepartmentId,
+    loading,
+    saving,
+    error,
+    setSelectedDepartmentId,
+    setMenuPermission,
+    loadData,
+    loadPermissions,
+    createDepartment,
+    assignDepartment,
+    saveMenuPermissions,
+    clearError
+  } = useUserMenuPermissionStore();
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-  const authHeaders = useMemo(
-    () => ({
-      "Content-Type": "application/json",
-      ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {})
-    }),
-    [session?.accessToken]
-  );
-
-  const loadData = async () => {
-    if (!session?.accessToken) {
-      return;
-    }
-
-    const [departmentResponse, userResponse] = await Promise.all([
-      fetch(`${apiUrl}/admin/departments`, { headers: authHeaders }),
-      fetch(`${apiUrl}/admin/users`, { headers: authHeaders })
-    ]);
-
-    if (!departmentResponse.ok || !userResponse.ok) {
-      messageApi.error("โหลดข้อมูลสิทธิ์ไม่สำเร็จ");
-      return;
-    }
-
-    const nextDepartments = (await departmentResponse.json()) as Department[];
-    setDepartments(nextDepartments);
-    setUsers((await userResponse.json()) as UserRow[]);
-    setSelectedDepartmentId((current) => current ?? nextDepartments[0]?.id);
-  };
-
-  const loadPermissions = async (departmentId: string) => {
-    const response = await fetch(`${apiUrl}/admin/menu-permissions?departmentId=${departmentId}`, {
-      headers: authHeaders
-    });
-
-    if (!response.ok) {
-      messageApi.error("โหลดสิทธิ์เมนูไม่สำเร็จ");
-      return;
-    }
-
-    setMenuPermissions((await response.json()) as MenuPermission[]);
-  };
+  const accessToken = session?.accessToken;
 
   useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.accessToken]);
+    loadData(accessToken);
+  }, [accessToken, loadData]);
 
   useEffect(() => {
-    if (selectedDepartmentId && session?.accessToken) {
-      loadPermissions(selectedDepartmentId);
+    if (selectedDepartmentId) {
+      loadPermissions(selectedDepartmentId, accessToken);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDepartmentId, session?.accessToken]);
+  }, [accessToken, loadPermissions, selectedDepartmentId]);
 
-  const createDepartment = async (values: DepartmentForm) => {
-    const response = await fetch(`${apiUrl}/admin/departments`, {
-      method: "POST",
-      headers: authHeaders,
-      body: JSON.stringify(values)
-    });
-
-    if (!response.ok) {
-      messageApi.error("สร้างแผนกไม่สำเร็จ");
-      return;
+  useEffect(() => {
+    if (error) {
+      messageApi.error(error);
     }
+  }, [error, messageApi]);
 
-    form.resetFields();
-    messageApi.success("สร้างแผนกสำเร็จ");
-    await loadData();
+  const submitDepartment = async (values: DepartmentForm) => {
+    try {
+      await createDepartment(values, accessToken);
+      form.resetFields();
+      messageApi.success("สร้างแผนกสำเร็จ");
+    } catch {
+      // Zustand already stores the error for the alert and toast.
+    }
   };
 
-  const assignDepartment = async (userId: string, departmentId?: string) => {
-    const response = await fetch(`${apiUrl}/admin/users/${userId}/department`, {
-      method: "PATCH",
-      headers: authHeaders,
-      body: JSON.stringify({ departmentId: departmentId ?? null })
-    });
-
-    if (!response.ok) {
-      messageApi.error("อัปเดตแผนกผู้ใช้ไม่สำเร็จ");
-      return;
+  const updateUserDepartment = async (userId: string, departmentId?: string) => {
+    try {
+      await assignDepartment(userId, departmentId, accessToken);
+      messageApi.success("อัปเดตแผนกผู้ใช้แล้ว");
+    } catch {
+      // Zustand already stores the error for the alert and toast.
     }
-
-    messageApi.success("อัปเดตแผนกผู้ใช้แล้ว");
-    await loadData();
   };
 
-  const saveMenuPermissions = async () => {
+  const submitMenuPermissions = async () => {
     if (!selectedDepartmentId) {
       messageApi.warning("กรุณาเลือกแผนก");
       return;
     }
 
-    setSaving(true);
-    const menuKeys = menuPermissions.filter((item) => item.canView).map((item) => item.key);
-    const response = await fetch(`${apiUrl}/admin/menu-permissions/${selectedDepartmentId}`, {
-      method: "PUT",
-      headers: authHeaders,
-      body: JSON.stringify({ menuKeys })
-    });
-    setSaving(false);
-
-    if (!response.ok) {
-      messageApi.error("บันทึกสิทธิ์เมนูไม่สำเร็จ");
-      return;
+    try {
+      await saveMenuPermissions(accessToken);
+      messageApi.success("บันทึกสิทธิ์เมนูแล้ว");
+    } catch {
+      // Zustand already stores the error for the alert and toast.
     }
-
-    messageApi.success("บันทึกสิทธิ์เมนูแล้ว");
-    setMenuPermissions((await response.json()) as MenuPermission[]);
   };
 
   const userColumns: ColumnsType<UserRow> = [
@@ -207,7 +132,7 @@ export default function UserMenuPermissionsPage() {
             value: department.id,
             label: department.name
           }))}
-          onChange={(value) => assignDepartment(row.id, value)}
+          onChange={(value) => updateUserDepartment(row.id, value)}
         />
       )
     }
@@ -250,8 +175,20 @@ export default function UserMenuPermissionsPage() {
         </Layout.Header>
 
         <Layout.Content className={styles.content}>
+          {error ? (
+            <Alert
+              closable
+              showIcon
+              type="error"
+              message="เชื่อมต่อ backend ไม่สำเร็จ"
+              description={error}
+              onClose={clearError}
+              style={{ marginBottom: 20 }}
+            />
+          ) : null}
+
           <div className={styles.toolbar}>
-            <Form form={form} layout="vertical" onFinish={createDepartment}>
+            <Form form={form} layout="vertical" onFinish={submitDepartment}>
               <Space.Compact style={{ width: "100%" }}>
                 <Form.Item name="code" rules={[{ required: true, message: "กรอกรหัสแผนก" }]} style={{ width: 110 }}>
                   <Input placeholder="CODE" />
@@ -259,7 +196,7 @@ export default function UserMenuPermissionsPage() {
                 <Form.Item name="name" rules={[{ required: true, message: "กรอกชื่อแผนก" }]} style={{ flex: 1 }}>
                   <Input placeholder="ชื่อแผนก" />
                 </Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={saving}>
                   เพิ่มแผนก
                 </Button>
               </Space.Compact>
@@ -282,7 +219,13 @@ export default function UserMenuPermissionsPage() {
                 <Typography.Title level={4}>ผู้ใช้และแผนก</Typography.Title>
                 <Typography.Text type="secondary">เลือกแผนกให้ user เพื่อรับสิทธิ์เมนูตามแผนกนั้น</Typography.Text>
               </div>
-              <Table rowKey="id" columns={userColumns} dataSource={users} pagination={{ pageSize: 8 }} />
+              <Table
+                rowKey="id"
+                columns={userColumns}
+                dataSource={users}
+                loading={loading}
+                pagination={{ pageSize: 8 }}
+              />
             </section>
 
             <section className={styles.panel}>
@@ -293,23 +236,14 @@ export default function UserMenuPermissionsPage() {
               <div className={styles.menuPermissionList}>
                 {menuPermissions.map((item) => (
                   <label className={styles.menuPermissionItem} key={item.key}>
-                    <Checkbox
-                      checked={item.canView}
-                      onChange={(event) =>
-                        setMenuPermissions((current) =>
-                          current.map((menu) =>
-                            menu.key === item.key ? { ...menu, canView: event.target.checked } : menu
-                          )
-                        )
-                      }
-                    >
+                    <Checkbox checked={item.canView} onChange={(event) => setMenuPermission(item.key, event.target.checked)}>
                       <strong>{item.label}</strong>
                       <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
                     </Checkbox>
                   </label>
                 ))}
               </div>
-              <Button type="primary" block loading={saving} onClick={saveMenuPermissions} style={{ marginTop: 18 }}>
+              <Button type="primary" block loading={saving} onClick={submitMenuPermissions} style={{ marginTop: 18 }}>
                 บันทึกสิทธิ์เมนู
               </Button>
             </section>
