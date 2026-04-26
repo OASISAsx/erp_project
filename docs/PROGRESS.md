@@ -39,6 +39,7 @@
   - Protected by NextAuth proxy
   - ERP module tiles
   - Loads menu from backend `/menu` with fallback data
+  - Sends NextAuth access token to backend so menus can be filtered by department permissions
 - Built backend base:
   - NestJS bootstrap
   - CORS for frontend
@@ -49,6 +50,8 @@
   - Auth module with demo login
   - Register endpoint with Prisma user creation and bcrypt password hashing
   - Menu module with ERP menu list
+  - Department table and department-menu permission model
+  - `/menu` filters visible menu items by the logged-in user's department
 
 ## Demo Account
 
@@ -70,6 +73,7 @@
   - HR
   - Reports
 - Add role and permission management.
+- Add department management screens and menu permission assignment UI.
 - Add and run Prisma migrations for the initial schema.
 
 ## Notes

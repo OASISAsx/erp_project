@@ -52,7 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  ErpMenu: 'ErpMenu'
+  Department: 'Department',
+  ErpMenu: 'ErpMenu',
+  DepartmentMenuPermission: 'DepartmentMenuPermission'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,12 +79,26 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   name: 'name',
   role: 'role',
+  departmentId: 'departmentId',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const DepartmentScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
 
 
 export const ErpMenuScalarFieldEnum = {
@@ -99,6 +115,18 @@ export const ErpMenuScalarFieldEnum = {
 export type ErpMenuScalarFieldEnum = (typeof ErpMenuScalarFieldEnum)[keyof typeof ErpMenuScalarFieldEnum]
 
 
+export const DepartmentMenuPermissionScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  menuId: 'menuId',
+  canView: 'canView',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentMenuPermissionScalarFieldEnum = (typeof DepartmentMenuPermissionScalarFieldEnum)[keyof typeof DepartmentMenuPermissionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -113,4 +141,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

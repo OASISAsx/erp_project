@@ -45,7 +45,17 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Department
+ * 
+ */
+export type Department = Prisma.DepartmentModel
+/**
  * Model ErpMenu
  * 
  */
 export type ErpMenu = Prisma.ErpMenuModel
+/**
+ * Model DepartmentMenuPermission
+ * 
+ */
+export type DepartmentMenuPermission = Prisma.DepartmentMenuPermissionModel

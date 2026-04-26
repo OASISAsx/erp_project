@@ -9,5 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Department'
 export type * from './models/ErpMenu'
+export type * from './models/DepartmentMenuPermission'
 export type * from './commonInputTypes'

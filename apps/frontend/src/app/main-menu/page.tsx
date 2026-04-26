@@ -13,6 +13,7 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu, Typography } from "antd";
+import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import styles from "./page.module.scss";
 
@@ -42,15 +43,19 @@ const icons = [
 
 export default function MainMenuPage() {
   const [modules, setModules] = useState<MenuItem[]>(fallbackMenu);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+    const token = session?.accessToken;
 
-    fetch(`${apiUrl}/menu`)
+    fetch(`${apiUrl}/menu`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined
+    })
       .then((response) => (response.ok ? response.json() : fallbackMenu))
       .then((data) => setModules(data))
       .catch(() => setModules(fallbackMenu));
-  }, []);
+  }, [session?.accessToken]);
 
   const logout = () => {
     signOut({ callbackUrl: "/login" });

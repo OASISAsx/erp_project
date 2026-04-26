@@ -51,7 +51,8 @@ export class AuthService {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role
+      role: user.role,
+      departmentId: user.departmentId
     });
   }
 
@@ -74,7 +75,8 @@ export class AuthService {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role
+      role: user.role,
+      departmentId: user.departmentId
     };
   }
 
@@ -89,11 +91,18 @@ export class AuthService {
       id: "admin",
       email: dto.email,
       name: "Admin",
-      role: "super_admin"
+      role: "super_admin",
+      departmentId: null
     };
   }
 
-  private createLoginResponse(user: { id: string; email: string; name: string; role: string }) {
+  private createLoginResponse(user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+    departmentId?: string | null;
+  }) {
     return {
       user,
       accessToken: this.jwtService.sign(user)

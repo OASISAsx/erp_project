@@ -9,6 +9,7 @@ type BackendLoginResponse = {
     email: string;
     name: string;
     role: string;
+    departmentId?: string | null;
   };
 };
 
@@ -52,6 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             email: data.user.email,
             name: data.user.name,
             role: data.user.role,
+            departmentId: data.user.departmentId,
             accessToken: data.accessToken
           };
         } catch {
@@ -66,6 +68,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             email,
             name: "Admin",
             role: "super_admin",
+            departmentId: null,
             accessToken: "demo-token"
           };
         }
@@ -77,6 +80,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.departmentId = user.departmentId;
         token.accessToken = user.accessToken;
       }
 
@@ -86,6 +90,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.sub ?? "";
         session.user.role = String(token.role ?? "");
+        session.user.departmentId =
+          typeof token.departmentId === "string" ? token.departmentId : null;
       }
 
       session.accessToken = String(token.accessToken ?? "");

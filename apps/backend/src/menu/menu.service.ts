@@ -1,11 +1,28 @@
 import { Injectable } from "@nestjs/common";
+import { AuthenticatedUser } from "../auth/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(user?: AuthenticatedUser) {
+    if (user?.role === "super_admin") {
+      return this.findAllActiveMenus();
+    }
+
+    if (user?.id) {
+      const userMenus = await this.findMenusByUserDepartment(user.id).catch(() => []);
+
+      if (userMenus.length > 0) {
+        return userMenus;
+      }
+    }
+
+    return this.findAllActiveMenus();
+  }
+
+  private async findAllActiveMenus() {
     const menus = await this.prisma.erpMenu
       .findMany({
         where: { isActive: true },
@@ -22,6 +39,36 @@ export class MenuService {
     }
 
     return this.fallbackMenus();
+  }
+
+  private async findMenusByUserDepartment(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        department: {
+          include: {
+            permissions: {
+              where: {
+                canView: true,
+                menu: { isActive: true }
+              },
+              include: { menu: true },
+              orderBy: { menu: { sortOrder: "asc" } }
+            }
+          }
+        }
+      }
+    });
+
+    if (!user?.department?.isActive) {
+      return [];
+    }
+
+    return user.department.permissions.map((permission) => ({
+      key: permission.menu.key,
+      label: permission.menu.label,
+      description: permission.menu.description
+    }));
   }
 
   private fallbackMenus() {

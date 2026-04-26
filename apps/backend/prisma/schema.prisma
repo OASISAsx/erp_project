@@ -12,27 +12,58 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String   @map("password_hash")
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String      @map("password_hash")
   name         String
-  role         String   @default("user")
-  isActive     Boolean  @default(true) @map("is_active")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  role         String      @default("user")
+  departmentId String?     @map("department_id")
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
+model Department {
+  id          String                     @id @default(cuid())
+  code        String                     @unique
+  name        String
+  description String?
+  isActive    Boolean                    @default(true) @map("is_active")
+  users       User[]
+  permissions DepartmentMenuPermission[]
+  createdAt   DateTime                   @default(now()) @map("created_at")
+  updatedAt   DateTime                   @updatedAt @map("updated_at")
+
+  @@map("departments")
+}
+
 model ErpMenu {
-  id          String   @id @default(cuid())
-  key         String   @unique
+  id          String                     @id @default(cuid())
+  key         String                     @unique
   label       String
   description String
-  sortOrder   Int      @default(0) @map("sort_order")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  sortOrder   Int                        @default(0) @map("sort_order")
+  isActive    Boolean                    @default(true) @map("is_active")
+  permissions DepartmentMenuPermission[]
+  createdAt   DateTime                   @default(now()) @map("created_at")
+  updatedAt   DateTime                   @updatedAt @map("updated_at")
 
   @@map("erp_menus")
+}
+
+model DepartmentMenuPermission {
+  id           String     @id @default(cuid())
+  departmentId String     @map("department_id")
+  menuId       String     @map("menu_id")
+  canView      Boolean    @default(true) @map("can_view")
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  menu         ErpMenu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@unique([departmentId, menuId])
+  @@map("department_menu_permissions")
 }
