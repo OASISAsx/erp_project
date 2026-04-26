@@ -1,0 +1,102 @@
+.shell {
+  min-height: 100vh;
+}
+
+.sider {
+  background: #0f2633;
+}
+
+.logo {
+  height: 64px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.header {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #e7ebf0;
+
+  h3 {
+    margin: 0 0 4px;
+  }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.content {
+  padding: 32px;
+  background: #f4f7fa;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(280px, 520px) minmax(240px, 360px);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: minmax(380px, 1fr) minmax(360px, 0.85fr);
+  gap: 20px;
+}
+
+.panel {
+  padding: 20px;
+  border: 1px solid #e2e8ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.panelTitle {
+  margin-bottom: 16px;
+}
+
+.menuPermissionList {
+  display: grid;
+  gap: 10px;
+}
+
+.menuPermissionItem {
+  padding: 12px;
+  border: 1px solid #e6edf4;
+  border-radius: 8px;
+}
+
+.menuDescription {
+  display: block;
+  margin-top: 4px;
+  color: #667789;
+}
+
+@media (max-width: 960px) {
+  .panelGrid,
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px 20px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+}

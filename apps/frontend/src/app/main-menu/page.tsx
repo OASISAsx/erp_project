@@ -8,6 +8,7 @@ import {
   BankOutlined,
   BarChartOutlined,
   LogoutOutlined,
+  SafetyCertificateOutlined,
   ShoppingCartOutlined,
   TeamOutlined,
   UserOutlined
@@ -15,6 +16,7 @@ import {
 import { Avatar, Button, Layout, Menu, Typography } from "antd";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
 
 type MenuItem = {
@@ -42,6 +44,7 @@ const icons = [
 ];
 
 export default function MainMenuPage() {
+  const router = useRouter();
   const [modules, setModules] = useState<MenuItem[]>(fallbackMenu);
   const { data: session } = useSession();
 
@@ -69,9 +72,15 @@ export default function MainMenuPage() {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["dashboard"]}
+          onClick={({ key }) => {
+            if (key === "permissions") {
+              router.push("/settings/user-menu-permissions");
+            }
+          }}
           items={[
             { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
             { key: "users", icon: <UserOutlined />, label: "ผู้ใช้งาน" },
+            { key: "permissions", icon: <SafetyCertificateOutlined />, label: "สิทธิ์เมนู" },
             { key: "reports", icon: <BarChartOutlined />, label: "รายงาน" }
           ]}
         />

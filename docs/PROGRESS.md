@@ -40,6 +40,11 @@
   - ERP module tiles
   - Loads menu from backend `/menu` with fallback data
   - Sends NextAuth access token to backend so menus can be filtered by department permissions
+- Built user menu permission settings page:
+  - `/settings/user-menu-permissions`
+  - Create departments
+  - Assign users to departments
+  - Set which main menus each department can view
 - Built backend base:
   - NestJS bootstrap
   - CORS for frontend
@@ -52,6 +57,7 @@
   - Menu module with ERP menu list
   - Department table and department-menu permission model
   - `/menu` filters visible menu items by the logged-in user's department
+  - Admin APIs for departments, users, and department menu permissions
 
 ## Demo Account
 
