@@ -14,8 +14,8 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu, Typography } from "antd";
-import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
+import type { MenuProps } from "antd";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
 
@@ -47,6 +47,7 @@ export default function MainMenuPage() {
   const router = useRouter();
   const [modules, setModules] = useState<MenuItem[]>(fallbackMenu);
   const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -60,59 +61,57 @@ export default function MainMenuPage() {
       .catch(() => setModules(fallbackMenu));
   }, [session?.accessToken]);
 
-  const logout = () => {
-    signOut({ callbackUrl: "/login" });
-  };
+  const navItems: MenuProps["items"] = [
+    { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
+    { key: "users", icon: <UserOutlined />, label: "ผู้ใช้งาน" },
+    ...(isSuperAdmin
+      ? [{ key: "permissions", icon: <SafetyCertificateOutlined />, label: "ตั้งสิทธิ์" }]
+      : []),
+    { key: "reports", icon: <BarChartOutlined />, label: "รายงาน" }
+  ];
 
   return (
     <Layout className={`${styles.shell} erp-app-shell`}>
-      <Layout.Sider breakpoint="lg" collapsedWidth="0" className={styles.sider}>
-        <div className={styles.logo}>ERP</div>
+      <Layout.Header className={styles.navbar}>
+        <div className={styles.brand}>ERP</div>
         <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["dashboard"]}
+          className={styles.navMenu}
+          mode="horizontal"
+          selectedKeys={["dashboard"]}
           onClick={({ key }) => {
             if (key === "permissions") {
               router.push("/settings/user-menu-permissions");
             }
           }}
-          items={[
-            { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
-            { key: "users", icon: <UserOutlined />, label: "ผู้ใช้งาน" },
-            { key: "permissions", icon: <SafetyCertificateOutlined />, label: "สิทธิ์เมนู" },
-            { key: "reports", icon: <BarChartOutlined />, label: "รายงาน" }
-          ]}
+          items={navItems}
         />
-      </Layout.Sider>
+        <div className={styles.profile}>
+          <Avatar icon={<UserOutlined />} />
+          <span>{session?.user?.name ?? "Admin"}</span>
+          <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: "/login" })}>
+            ออกจากระบบ
+          </Button>
+        </div>
+      </Layout.Header>
 
-      <Layout>
-        <Layout.Header className={styles.header}>
-          <div>
-            <Typography.Title level={3}>เมนูหลัก ERP</Typography.Title>
-            <Typography.Text type="secondary">เลือกโมดูลเพื่อเริ่มทำงาน</Typography.Text>
-          </div>
-          <div className={styles.profile}>
-            <Avatar icon={<UserOutlined />} />
-            <span>Admin</span>
-            <Button icon={<LogoutOutlined />} onClick={logout}>
-              ออกจากระบบ
-            </Button>
-          </div>
-        </Layout.Header>
+      <div className={styles.pageHeader}>
+        <div>
+          <Typography.Title level={3}>เมนูหลัก ERP</Typography.Title>
+          <Typography.Text type="secondary">เลือกโมดูลเพื่อเริ่มทำงาน</Typography.Text>
+        </div>
+      </div>
 
-        <Layout.Content className={styles.content}>
-          <div className={styles.moduleGrid}>
-            {modules.map((item, index) => (
-              <button className={styles.moduleTile} key={item.key} type="button">
-                <span className={styles.moduleIcon}>{icons[index % icons.length]}</span>
-                <span className={styles.moduleLabel}>{item.label}</span>
-                <span className={styles.moduleDescription}>{item.description}</span>
-              </button>
-            ))}
-          </div>
-        </Layout.Content>
-      </Layout>
+      <Layout.Content className={styles.content}>
+        <div className={styles.moduleGrid}>
+          {modules.map((item, index) => (
+            <button className={styles.moduleTile} key={item.key} type="button">
+              <span className={styles.moduleIcon}>{icons[index % icons.length]}</span>
+              <span className={styles.moduleLabel}>{item.label}</span>
+              <span className={styles.moduleDescription}>{item.description}</span>
+            </button>
+          ))}
+        </div>
+      </Layout.Content>
     </Layout>
   );
 }

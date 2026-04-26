@@ -2,12 +2,7 @@
 
 import "@ant-design/v5-patch-for-react-19";
 import { useEffect } from "react";
-import {
-  AppstoreOutlined,
-  LogoutOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined
-} from "@ant-design/icons";
+import { AppstoreOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Alert,
   Avatar,
@@ -16,7 +11,7 @@ import {
   Form,
   Input,
   Layout,
-  Menu,
+  Result,
   Select,
   Space,
   Table,
@@ -32,7 +27,7 @@ import styles from "./page.module.scss";
 
 export default function UserMenuPermissionsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm<DepartmentForm>();
   const {
@@ -54,16 +49,19 @@ export default function UserMenuPermissionsPage() {
   } = useUserMenuPermissionStore();
 
   const accessToken = session?.accessToken;
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   useEffect(() => {
-    loadData(accessToken);
-  }, [accessToken, loadData]);
+    if (isSuperAdmin) {
+      loadData(accessToken);
+    }
+  }, [accessToken, isSuperAdmin, loadData]);
 
   useEffect(() => {
-    if (selectedDepartmentId) {
+    if (isSuperAdmin && selectedDepartmentId) {
       loadPermissions(selectedDepartmentId, accessToken);
     }
-  }, [accessToken, loadPermissions, selectedDepartmentId]);
+  }, [accessToken, isSuperAdmin, loadPermissions, selectedDepartmentId]);
 
   useEffect(() => {
     if (error) {
@@ -77,7 +75,7 @@ export default function UserMenuPermissionsPage() {
       form.resetFields();
       messageApi.success("สร้างแผนกสำเร็จ");
     } catch {
-      // Zustand already stores the error for the alert and toast.
+      // Zustand stores the error for the alert and toast.
     }
   };
 
@@ -86,7 +84,7 @@ export default function UserMenuPermissionsPage() {
       await assignDepartment(userId, departmentId, accessToken);
       messageApi.success("อัปเดตแผนกผู้ใช้แล้ว");
     } catch {
-      // Zustand already stores the error for the alert and toast.
+      // Zustand stores the error for the alert and toast.
     }
   };
 
@@ -100,7 +98,7 @@ export default function UserMenuPermissionsPage() {
       await saveMenuPermissions(accessToken);
       messageApi.success("บันทึกสิทธิ์เมนูแล้ว");
     } catch {
-      // Zustand already stores the error for the alert and toast.
+      // Zustand stores the error for the alert and toast.
     }
   };
 
@@ -141,115 +139,125 @@ export default function UserMenuPermissionsPage() {
   return (
     <Layout className={styles.shell}>
       {contextHolder}
-      <Layout.Sider breakpoint="lg" collapsedWidth="0" className={styles.sider}>
-        <div className={styles.logo}>ERP</div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={["permissions"]}
-          onClick={({ key }) => {
-            if (key === "dashboard") {
-              router.push("/main-menu");
-            }
-          }}
-          items={[
-            { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
-            { key: "permissions", icon: <SafetyCertificateOutlined />, label: "สิทธิ์เมนู" }
-          ]}
-        />
-      </Layout.Sider>
+      <Layout.Header className={styles.navbar}>
+        <div className={styles.brand}>ERP</div>
+        <Button icon={<AppstoreOutlined />} onClick={() => router.push("/main-menu")}>
+          เมนูหลัก
+        </Button>
+        {isSuperAdmin ? <Button type="primary">ตั้งสิทธิ์</Button> : null}
+        <div className={styles.profile}>
+          <Avatar icon={<UserOutlined />} />
+          <span>{session?.user?.name ?? "Admin"}</span>
+          <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: "/login" })}>
+            ออกจากระบบ
+          </Button>
+        </div>
+      </Layout.Header>
 
-      <Layout>
-        <Layout.Header className={styles.header}>
-          <div>
-            <Typography.Title level={3}>ตั้งค่าสิทธิ์เมนูผู้ใช้</Typography.Title>
-            <Typography.Text type="secondary">กำหนดแผนกของผู้ใช้ และเลือกเมนูหลักที่แต่ละแผนกมองเห็น</Typography.Text>
-          </div>
-          <div className={styles.profile}>
-            <Avatar icon={<UserOutlined />} />
-            <span>{session?.user?.name ?? "Admin"}</span>
-            <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: "/login" })}>
-              ออกจากระบบ
-            </Button>
-          </div>
-        </Layout.Header>
-
+      {!isSuperAdmin && status !== "loading" ? (
         <Layout.Content className={styles.content}>
-          {error ? (
-            <Alert
-              closable
-              showIcon
-              type="error"
-              message="เชื่อมต่อ backend ไม่สำเร็จ"
-              description={error}
-              onClose={clearError}
-              style={{ marginBottom: 20 }}
-            />
-          ) : null}
-
-          <div className={styles.toolbar}>
-            <Form form={form} layout="vertical" onFinish={submitDepartment}>
-              <Space.Compact style={{ width: "100%" }}>
-                <Form.Item name="code" rules={[{ required: true, message: "กรอกรหัสแผนก" }]} style={{ width: 110 }}>
-                  <Input placeholder="CODE" />
-                </Form.Item>
-                <Form.Item name="name" rules={[{ required: true, message: "กรอกชื่อแผนก" }]} style={{ flex: 1 }}>
-                  <Input placeholder="ชื่อแผนก" />
-                </Form.Item>
-                <Button type="primary" htmlType="submit" loading={saving}>
-                  เพิ่มแผนก
-                </Button>
-              </Space.Compact>
-            </Form>
-
-            <Select
-              placeholder="เลือกแผนกเพื่อตั้งสิทธิ์เมนู"
-              value={selectedDepartmentId}
-              options={departments.map((department) => ({
-                value: department.id,
-                label: `${department.name} (${department.code})`
-              }))}
-              onChange={setSelectedDepartmentId}
-            />
-          </div>
-
-          <div className={styles.panelGrid}>
-            <section className={styles.panel}>
-              <div className={styles.panelTitle}>
-                <Typography.Title level={4}>ผู้ใช้และแผนก</Typography.Title>
-                <Typography.Text type="secondary">เลือกแผนกให้ user เพื่อรับสิทธิ์เมนูตามแผนกนั้น</Typography.Text>
-              </div>
-              <Table
-                rowKey="id"
-                columns={userColumns}
-                dataSource={users}
-                loading={loading}
-                pagination={{ pageSize: 8 }}
-              />
-            </section>
-
-            <section className={styles.panel}>
-              <div className={styles.panelTitle}>
-                <Typography.Title level={4}>เมนูที่แผนกมองเห็น</Typography.Title>
-                <Typography.Text type="secondary">ติ๊กเมนูหลักที่ต้องการให้แผนกนี้เห็น</Typography.Text>
-              </div>
-              <div className={styles.menuPermissionList}>
-                {menuPermissions.map((item) => (
-                  <label className={styles.menuPermissionItem} key={item.key}>
-                    <Checkbox checked={item.canView} onChange={(event) => setMenuPermission(item.key, event.target.checked)}>
-                      <strong>{item.label}</strong>
-                      <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
-                    </Checkbox>
-                  </label>
-                ))}
-              </div>
-              <Button type="primary" block loading={saving} onClick={submitMenuPermissions} style={{ marginTop: 18 }}>
-                บันทึกสิทธิ์เมนู
+          <Result
+            status="403"
+            title="ไม่มีสิทธิ์เข้าถึง"
+            subTitle="หน้านี้แสดงเฉพาะผู้ใช้ role super_admin เท่านั้น"
+            extra={
+              <Button type="primary" onClick={() => router.push("/main-menu")}>
+                กลับเมนูหลัก
               </Button>
-            </section>
-          </div>
+            }
+          />
         </Layout.Content>
-      </Layout>
+      ) : (
+        <>
+          <div className={styles.pageHeader}>
+            <div>
+              <Typography.Title level={3}>ตั้งค่าสิทธิ์เมนูผู้ใช้</Typography.Title>
+              <Typography.Text type="secondary">
+                กำหนดแผนกของผู้ใช้ และเลือกเมนูหลักที่แต่ละแผนกมองเห็น
+              </Typography.Text>
+            </div>
+          </div>
+
+          <Layout.Content className={styles.content}>
+            {error ? (
+              <Alert
+                closable
+                showIcon
+                type="error"
+                message="เชื่อมต่อ backend ไม่สำเร็จ"
+                description={error}
+                onClose={clearError}
+                style={{ marginBottom: 20 }}
+              />
+            ) : null}
+
+            <div className={styles.toolbar}>
+              <Form form={form} layout="vertical" onFinish={submitDepartment}>
+                <Space.Compact style={{ width: "100%" }}>
+                  <Form.Item name="code" rules={[{ required: true, message: "กรอกรหัสแผนก" }]} style={{ width: 110 }}>
+                    <Input placeholder="CODE" />
+                  </Form.Item>
+                  <Form.Item name="name" rules={[{ required: true, message: "กรอกชื่อแผนก" }]} style={{ flex: 1 }}>
+                    <Input placeholder="ชื่อแผนก" />
+                  </Form.Item>
+                  <Button type="primary" htmlType="submit" loading={saving}>
+                    เพิ่มแผนก
+                  </Button>
+                </Space.Compact>
+              </Form>
+
+              <Select
+                placeholder="เลือกแผนกเพื่อตั้งสิทธิ์เมนู"
+                value={selectedDepartmentId}
+                options={departments.map((department) => ({
+                  value: department.id,
+                  label: `${department.name} (${department.code})`
+                }))}
+                onChange={setSelectedDepartmentId}
+              />
+            </div>
+
+            <div className={styles.panelGrid}>
+              <section className={styles.panel}>
+                <div className={styles.panelTitle}>
+                  <Typography.Title level={4}>ผู้ใช้และแผนก</Typography.Title>
+                  <Typography.Text type="secondary">เลือกแผนกให้ user เพื่อรับสิทธิ์เมนูตามแผนกนั้น</Typography.Text>
+                </div>
+                <Table
+                  rowKey="id"
+                  columns={userColumns}
+                  dataSource={users}
+                  loading={loading}
+                  pagination={{ pageSize: 8 }}
+                />
+              </section>
+
+              <section className={styles.panel}>
+                <div className={styles.panelTitle}>
+                  <Typography.Title level={4}>เมนูที่แผนกมองเห็น</Typography.Title>
+                  <Typography.Text type="secondary">ติ๊กเมนูหลักที่ต้องการให้แผนกนี้เห็น</Typography.Text>
+                </div>
+                <div className={styles.menuPermissionList}>
+                  {menuPermissions.map((item) => (
+                    <label className={styles.menuPermissionItem} key={item.key}>
+                      <Checkbox
+                        checked={item.canView}
+                        onChange={(event) => setMenuPermission(item.key, event.target.checked)}
+                      >
+                        <strong>{item.label}</strong>
+                        <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
+                      </Checkbox>
+                    </label>
+                  ))}
+                </div>
+                <Button type="primary" block loading={saving} onClick={submitMenuPermissions} style={{ marginTop: 18 }}>
+                  บันทึกสิทธิ์เมนู
+                </Button>
+              </section>
+            </div>
+          </Layout.Content>
+        </>
+      )}
     </Layout>
   );
 }

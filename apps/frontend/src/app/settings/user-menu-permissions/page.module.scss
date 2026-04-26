@@ -1,26 +1,29 @@
 .shell {
   min-height: 100vh;
+  background: #f4f7fa;
 }
 
-.sider {
-  background: #0f2633;
+.navbar {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #e7ebf0;
 }
 
-.logo {
-  height: 64px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
+.brand {
+  margin-right: 8px;
+  color: #0f2633;
   font-size: 22px;
   font-weight: 800;
 }
 
-.header {
+.pageHeader {
   min-height: 88px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
   padding: 20px 32px;
   background: #ffffff;
   border-bottom: 1px solid #e7ebf0;
@@ -34,6 +37,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
   white-space: nowrap;
 }
 
@@ -90,10 +94,18 @@
     grid-template-columns: 1fr;
   }
 
-  .header {
+  .navbar,
+  .pageHeader {
     align-items: flex-start;
     flex-direction: column;
-    padding: 18px 20px;
+    height: auto;
+    padding: 16px 20px;
+  }
+
+  .profile {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
   }
 
   .content {
