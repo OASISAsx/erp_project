@@ -15,9 +15,6 @@ type BackendLoginResponse = {
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   ...authConfig,
-  session: {
-    strategy: "jwt"
-  },
   providers: [
     Credentials({
       credentials: {

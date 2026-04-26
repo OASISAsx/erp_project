@@ -18,12 +18,13 @@ export default function LoginAntdPanel() {
   const onFinish = async (values: LoginForm) => {
     const result = await signIn("credentials", {
       ...values,
-      redirect: false
+      redirect: false,
+      redirectTo: "/main-menu"
     });
 
     if (result?.ok) {
       messageApi.success("เข้าสู่ระบบสำเร็จ");
-      window.location.assign("/main-menu");
+      window.location.href = result.url ?? "/main-menu";
       return;
     }
 
