@@ -12,11 +12,7 @@ export class MenuService {
     }
 
     if (user?.id) {
-      const userMenus = await this.findMenusByUserDepartment(user.id).catch(() => []);
-
-      if (userMenus.length > 0) {
-        return userMenus;
-      }
+      return this.findMenusByUserDepartment(user.id);
     }
 
     return this.findAllActiveMenus();
@@ -44,27 +40,29 @@ export class MenuService {
   private async findMenusByUserDepartment(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        departmentId: true,
         department: {
-          include: {
-            permissions: {
-              where: {
-                canView: true,
-                menu: { isActive: true }
-              },
-              include: { menu: true },
-              orderBy: { menu: { sortOrder: "asc" } }
-            }
-          }
+          select: { isActive: true }
         }
       }
     });
 
-    if (!user?.department?.isActive) {
+    if (!user?.departmentId || !user.department?.isActive) {
       return [];
     }
 
-    return user.department.permissions.map((permission) => ({
+    const permissions = await this.prisma.departmentMenuPermission.findMany({
+      where: {
+        departmentId: user.departmentId,
+        canView: true,
+        menu: { isActive: true }
+      },
+      include: { menu: true },
+      orderBy: [{ menu: { sortOrder: "asc" } }, { menu: { label: "asc" } }]
+    });
+
+    return permissions.map((permission) => ({
       key: permission.menu.key,
       label: permission.menu.label,
       description: permission.menu.description
