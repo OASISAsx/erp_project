@@ -37,21 +37,11 @@ export default function RegisterAntdPanel() {
       return;
     }
 
-    const signInResult = await signIn("credentials", {
+    await signIn("credentials", {
       email: values.email,
       password: values.password,
-      redirect: false,
       redirectTo: "/main-menu"
     });
-
-    if (signInResult?.ok) {
-      messageApi.success("สมัครสมาชิกสำเร็จ");
-      window.location.href = signInResult.url ?? "/main-menu";
-      return;
-    }
-
-    messageApi.success("สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ");
-    window.location.href = "/login";
   };
 
   return (

@@ -16,19 +16,10 @@ export default function LoginAntdPanel() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: LoginForm) => {
-    const result = await signIn("credentials", {
+    await signIn("credentials", {
       ...values,
-      redirect: false,
       redirectTo: "/main-menu"
     });
-
-    if (result?.ok) {
-      messageApi.success("เข้าสู่ระบบสำเร็จ");
-      window.location.href = result.url ?? "/main-menu";
-      return;
-    }
-
-    messageApi.error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
   };
 
   return (
