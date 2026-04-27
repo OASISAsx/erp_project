@@ -8,12 +8,23 @@ import {
 } from "./dto";
 
 const defaultMenus = [
-  { key: "sales", label: "ขาย", description: "ใบเสนอราคา ใบสั่งขาย และลูกค้า", sortOrder: 10 },
-  { key: "inventory", label: "คลังสินค้า", description: "สินค้า สต็อก และการโอนย้าย", sortOrder: 20 },
-  { key: "purchase", label: "จัดซื้อ", description: "ผู้ขาย ใบสั่งซื้อ และรับสินค้า", sortOrder: 30 },
-  { key: "accounting", label: "บัญชี", description: "รายรับ รายจ่าย และรายงานบัญชี", sortOrder: 40 },
-  { key: "hr", label: "บุคคล", description: "พนักงาน สิทธิ์ และเวลาทำงาน", sortOrder: 50 },
-  { key: "reports", label: "รายงาน", description: "แดชบอร์ดและตัวชี้วัด", sortOrder: 60 }
+  { key: "master", label: "ข้อมูลหลัก", description: "ข้อมูลหลัก", sortOrder: 10 },
+  {
+    key: "master.customers",
+    label: "ลูกค้า",
+    description: "สร้างและจัดการข้อมูลลูกค้า",
+    path: "/master/customers",
+    parentKey: "master",
+    sortOrder: 10
+  },
+  {
+    key: "master.products",
+    label: "สินค้า",
+    description: "สร้างและจัดการข้อมูลสินค้า",
+    path: "/master/products",
+    parentKey: "master",
+    sortOrder: 20
+  }
 ];
 
 @Injectable()
@@ -156,20 +167,31 @@ export class AdminService {
   }
 
   private async ensureDefaultMenus() {
-    await this.prisma.$transaction(
-      defaultMenus.map((menu) =>
-        this.prisma.erpMenu.upsert({
-          where: { key: menu.key },
-          create: menu,
-          update: {
-            label: menu.label,
-            description: menu.description,
-            sortOrder: menu.sortOrder,
-            isActive: true
-          }
-        })
-      )
-    );
+    for (const menu of defaultMenus) {
+      const parent = menu.parentKey
+        ? await this.prisma.erpMenu.findUnique({ where: { key: menu.parentKey } })
+        : null;
+
+      await this.prisma.erpMenu.upsert({
+        where: { key: menu.key },
+        create: {
+          key: menu.key,
+          label: menu.label,
+          description: menu.description,
+          path: menu.path,
+          parentId: parent?.id,
+          sortOrder: menu.sortOrder
+        },
+        update: {
+          label: menu.label,
+          description: menu.description,
+          path: menu.path,
+          parentId: parent?.id,
+          sortOrder: menu.sortOrder,
+          isActive: true
+        }
+      });
+    }
   }
 
   private assertAdmin(user?: AuthenticatedUser) {

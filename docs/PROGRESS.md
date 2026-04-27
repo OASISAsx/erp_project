@@ -40,6 +40,10 @@
   - ERP module tiles
   - Loads menu from backend `/menu` with fallback data
   - Sends NextAuth access token to backend so menus can be filtered by department permissions
+  - Supports parent menus with submenu cards
+- Built master data placeholder pages:
+  - `/master/customers`
+  - `/master/products`
 - Built user menu permission settings page:
   - `/settings/user-menu-permissions`
   - Create departments
@@ -59,6 +63,7 @@
   - Department table and department-menu permission model
   - `/menu` filters visible menu items by the logged-in user's department
   - Admin APIs for departments, users, and department menu permissions
+  - `erp_menus` supports parent/child menu hierarchy and optional paths
 
 ## Demo Account
 

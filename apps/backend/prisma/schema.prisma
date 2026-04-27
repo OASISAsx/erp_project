@@ -45,6 +45,10 @@ model ErpMenu {
   key         String                     @unique
   label       String
   description String
+  path        String?
+  parentId    String?                    @map("parent_id")
+  parent      ErpMenu?                   @relation("ErpMenuHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    ErpMenu[]                  @relation("ErpMenuHierarchy")
   sortOrder   Int                        @default(0) @map("sort_order")
   isActive    Boolean                    @default(true) @map("is_active")
   permissions DepartmentMenuPermission[]

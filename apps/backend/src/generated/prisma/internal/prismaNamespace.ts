@@ -775,6 +775,8 @@ export const ErpMenuScalarFieldEnum = {
   key: 'key',
   label: 'label',
   description: 'description',
+  path: 'path',
+  parentId: 'parentId',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
   createdAt: 'createdAt',

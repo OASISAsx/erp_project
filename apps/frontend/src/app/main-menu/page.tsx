@@ -4,13 +4,11 @@ import "@ant-design/v5-patch-for-react-19";
 import { useEffect, useState } from "react";
 import {
   AppstoreOutlined,
-  AuditOutlined,
-  BankOutlined,
-  BarChartOutlined,
+  DatabaseOutlined,
   LogoutOutlined,
   SafetyCertificateOutlined,
   ShoppingCartOutlined,
-  TeamOutlined,
+  TagsOutlined,
   UserOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu, Typography } from "antd";
@@ -23,25 +21,37 @@ type MenuItem = {
   key: string;
   label: string;
   description: string;
+  path?: string | null;
+  children?: MenuItem[];
 };
 
 const fallbackMenu: MenuItem[] = [
-  { key: "sales", label: "ขาย", description: "ใบเสนอราคา ใบสั่งขาย และลูกค้า" },
-  { key: "inventory", label: "คลังสินค้า", description: "สินค้า สต็อก และการโอนย้าย" },
-  { key: "purchase", label: "จัดซื้อ", description: "ผู้ขาย ใบสั่งซื้อ และรับสินค้า" },
-  { key: "accounting", label: "บัญชี", description: "รายรับ รายจ่าย และรายงานบัญชี" },
-  { key: "hr", label: "บุคคล", description: "พนักงาน สิทธิ์ และเวลาทำงาน" },
-  { key: "reports", label: "รายงาน", description: "แดชบอร์ดและตัวชี้วัด" }
+  {
+    key: "master",
+    label: "ข้อมูลหลัก",
+    description: "ข้อมูลหลัก",
+    children: [
+      {
+        key: "master.customers",
+        label: "ลูกค้า",
+        description: "สร้างและจัดการข้อมูลลูกค้า",
+        path: "/master/customers"
+      },
+      {
+        key: "master.products",
+        label: "สินค้า",
+        description: "สร้างและจัดการข้อมูลสินค้า",
+        path: "/master/products"
+      }
+    ]
+  }
 ];
 
-const icons = [
-  <ShoppingCartOutlined key="sales" />,
-  <AppstoreOutlined key="inventory" />,
-  <AuditOutlined key="purchase" />,
-  <BankOutlined key="accounting" />,
-  <TeamOutlined key="hr" />,
-  <BarChartOutlined key="reports" />
-];
+const iconByKey: Record<string, React.ReactNode> = {
+  master: <DatabaseOutlined />,
+  "master.customers": <UserOutlined />,
+  "master.products": <TagsOutlined />
+};
 
 export default function MainMenuPage() {
   const router = useRouter();
@@ -63,12 +73,16 @@ export default function MainMenuPage() {
 
   const navItems: MenuProps["items"] = [
     { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
-    { key: "users", icon: <UserOutlined />, label: "ผู้ใช้งาน" },
     ...(isSuperAdmin
       ? [{ key: "permissions", icon: <SafetyCertificateOutlined />, label: "ตั้งสิทธิ์" }]
-      : []),
-    { key: "reports", icon: <BarChartOutlined />, label: "รายงาน" }
+      : [])
   ];
+
+  const openMenu = (item: MenuItem) => {
+    if (item.path) {
+      router.push(item.path);
+    }
+  };
 
   return (
     <Layout className={`${styles.shell} erp-app-shell`}>
@@ -97,18 +111,32 @@ export default function MainMenuPage() {
       <div className={styles.pageHeader}>
         <div>
           <Typography.Title level={3}>เมนูหลัก ERP</Typography.Title>
-          <Typography.Text type="secondary">เลือกโมดูลเพื่อเริ่มทำงาน</Typography.Text>
+          <Typography.Text type="secondary">เลือกเมนูหลักและเมนูย่อยเพื่อเริ่มทำงาน</Typography.Text>
         </div>
       </div>
 
       <Layout.Content className={styles.content}>
         <div className={styles.moduleGrid}>
-          {modules.map((item, index) => (
-            <button className={styles.moduleTile} key={item.key} type="button">
-              <span className={styles.moduleIcon}>{icons[index % icons.length]}</span>
+          {modules.map((item) => (
+            <section className={styles.moduleTile} key={item.key}>
+              <span className={styles.moduleIcon}>{iconByKey[item.key] ?? <AppstoreOutlined />}</span>
               <span className={styles.moduleLabel}>{item.label}</span>
               <span className={styles.moduleDescription}>{item.description}</span>
-            </button>
+
+              {item.children?.length ? (
+                <div className={styles.subMenuList}>
+                  {item.children.map((child) => (
+                    <button className={styles.subMenuButton} key={child.key} type="button" onClick={() => openMenu(child)}>
+                      <span className={styles.subMenuIcon}>{iconByKey[child.key] ?? <ShoppingCartOutlined />}</span>
+                      <span>
+                        <strong>{child.label}</strong>
+                        <small>{child.description}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </section>
           ))}
         </div>
       </Layout.Content>

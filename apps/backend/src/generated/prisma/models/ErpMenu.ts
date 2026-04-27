@@ -39,6 +39,8 @@ export type ErpMenuMinAggregateOutputType = {
   key: string | null
   label: string | null
   description: string | null
+  path: string | null
+  parentId: string | null
   sortOrder: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -50,6 +52,8 @@ export type ErpMenuMaxAggregateOutputType = {
   key: string | null
   label: string | null
   description: string | null
+  path: string | null
+  parentId: string | null
   sortOrder: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -61,6 +65,8 @@ export type ErpMenuCountAggregateOutputType = {
   key: number
   label: number
   description: number
+  path: number
+  parentId: number
   sortOrder: number
   isActive: number
   createdAt: number
@@ -82,6 +88,8 @@ export type ErpMenuMinAggregateInputType = {
   key?: true
   label?: true
   description?: true
+  path?: true
+  parentId?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -93,6 +101,8 @@ export type ErpMenuMaxAggregateInputType = {
   key?: true
   label?: true
   description?: true
+  path?: true
+  parentId?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -104,6 +114,8 @@ export type ErpMenuCountAggregateInputType = {
   key?: true
   label?: true
   description?: true
+  path?: true
+  parentId?: true
   sortOrder?: true
   isActive?: true
   createdAt?: true
@@ -202,6 +214,8 @@ export type ErpMenuGroupByOutputType = {
   key: string
   label: string
   description: string
+  path: string | null
+  parentId: string | null
   sortOrder: number
   isActive: boolean
   createdAt: Date
@@ -236,10 +250,14 @@ export type ErpMenuWhereInput = {
   key?: Prisma.StringFilter<"ErpMenu"> | string
   label?: Prisma.StringFilter<"ErpMenu"> | string
   description?: Prisma.StringFilter<"ErpMenu"> | string
+  path?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
+  parentId?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
   sortOrder?: Prisma.IntFilter<"ErpMenu"> | number
   isActive?: Prisma.BoolFilter<"ErpMenu"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
+  parent?: Prisma.XOR<Prisma.ErpMenuNullableScalarRelationFilter, Prisma.ErpMenuWhereInput> | null
+  children?: Prisma.ErpMenuListRelationFilter
   permissions?: Prisma.DepartmentMenuPermissionListRelationFilter
 }
 
@@ -248,10 +266,14 @@ export type ErpMenuOrderByWithRelationInput = {
   key?: Prisma.SortOrder
   label?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  path?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  parent?: Prisma.ErpMenuOrderByWithRelationInput
+  children?: Prisma.ErpMenuOrderByRelationAggregateInput
   permissions?: Prisma.DepartmentMenuPermissionOrderByRelationAggregateInput
 }
 
@@ -263,10 +285,14 @@ export type ErpMenuWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ErpMenuWhereInput | Prisma.ErpMenuWhereInput[]
   label?: Prisma.StringFilter<"ErpMenu"> | string
   description?: Prisma.StringFilter<"ErpMenu"> | string
+  path?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
+  parentId?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
   sortOrder?: Prisma.IntFilter<"ErpMenu"> | number
   isActive?: Prisma.BoolFilter<"ErpMenu"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
+  parent?: Prisma.XOR<Prisma.ErpMenuNullableScalarRelationFilter, Prisma.ErpMenuWhereInput> | null
+  children?: Prisma.ErpMenuListRelationFilter
   permissions?: Prisma.DepartmentMenuPermissionListRelationFilter
 }, "id" | "key">
 
@@ -275,6 +301,8 @@ export type ErpMenuOrderByWithAggregationInput = {
   key?: Prisma.SortOrder
   label?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  path?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -294,6 +322,8 @@ export type ErpMenuScalarWhereWithAggregatesInput = {
   key?: Prisma.StringWithAggregatesFilter<"ErpMenu"> | string
   label?: Prisma.StringWithAggregatesFilter<"ErpMenu"> | string
   description?: Prisma.StringWithAggregatesFilter<"ErpMenu"> | string
+  path?: Prisma.StringNullableWithAggregatesFilter<"ErpMenu"> | string | null
+  parentId?: Prisma.StringNullableWithAggregatesFilter<"ErpMenu"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"ErpMenu"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"ErpMenu"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ErpMenu"> | Date | string
@@ -305,10 +335,13 @@ export type ErpMenuCreateInput = {
   key: string
   label: string
   description: string
+  path?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  parent?: Prisma.ErpMenuCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ErpMenuCreateNestedManyWithoutParentInput
   permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutMenuInput
 }
 
@@ -317,10 +350,13 @@ export type ErpMenuUncheckedCreateInput = {
   key: string
   label: string
   description: string
+  path?: string | null
+  parentId?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  children?: Prisma.ErpMenuUncheckedCreateNestedManyWithoutParentInput
   permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutMenuInput
 }
 
@@ -329,10 +365,13 @@ export type ErpMenuUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ErpMenuUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ErpMenuUpdateManyWithoutParentNestedInput
   permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutMenuNestedInput
 }
 
@@ -341,10 +380,13 @@ export type ErpMenuUncheckedUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ErpMenuUncheckedUpdateManyWithoutParentNestedInput
   permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutMenuNestedInput
 }
 
@@ -353,6 +395,8 @@ export type ErpMenuCreateManyInput = {
   key: string
   label: string
   description: string
+  path?: string | null
+  parentId?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -364,6 +408,7 @@ export type ErpMenuUpdateManyMutationInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,10 +420,27 @@ export type ErpMenuUncheckedUpdateManyInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ErpMenuNullableScalarRelationFilter = {
+  is?: Prisma.ErpMenuWhereInput | null
+  isNot?: Prisma.ErpMenuWhereInput | null
+}
+
+export type ErpMenuListRelationFilter = {
+  every?: Prisma.ErpMenuWhereInput
+  some?: Prisma.ErpMenuWhereInput
+  none?: Prisma.ErpMenuWhereInput
+}
+
+export type ErpMenuOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ErpMenuCountOrderByAggregateInput = {
@@ -386,6 +448,8 @@ export type ErpMenuCountOrderByAggregateInput = {
   key?: Prisma.SortOrder
   label?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  path?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -401,6 +465,8 @@ export type ErpMenuMaxOrderByAggregateInput = {
   key?: Prisma.SortOrder
   label?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  path?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -412,6 +478,8 @@ export type ErpMenuMinOrderByAggregateInput = {
   key?: Prisma.SortOrder
   label?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  path?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -427,12 +495,70 @@ export type ErpMenuScalarRelationFilter = {
   isNot?: Prisma.ErpMenuWhereInput
 }
 
+export type ErpMenuCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutChildrenInput, Prisma.ErpMenuUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutChildrenInput
+  connect?: Prisma.ErpMenuWhereUniqueInput
+}
+
+export type ErpMenuCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput> | Prisma.ErpMenuCreateWithoutParentInput[] | Prisma.ErpMenuUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutParentInput | Prisma.ErpMenuCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ErpMenuCreateManyParentInputEnvelope
+  connect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+}
+
+export type ErpMenuUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput> | Prisma.ErpMenuCreateWithoutParentInput[] | Prisma.ErpMenuUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutParentInput | Prisma.ErpMenuCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ErpMenuCreateManyParentInputEnvelope
+  connect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type ErpMenuUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutChildrenInput, Prisma.ErpMenuUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.ErpMenuUpsertWithoutChildrenInput
+  disconnect?: Prisma.ErpMenuWhereInput | boolean
+  delete?: Prisma.ErpMenuWhereInput | boolean
+  connect?: Prisma.ErpMenuWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ErpMenuUpdateToOneWithWhereWithoutChildrenInput, Prisma.ErpMenuUpdateWithoutChildrenInput>, Prisma.ErpMenuUncheckedUpdateWithoutChildrenInput>
+}
+
+export type ErpMenuUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput> | Prisma.ErpMenuCreateWithoutParentInput[] | Prisma.ErpMenuUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutParentInput | Prisma.ErpMenuCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ErpMenuUpsertWithWhereUniqueWithoutParentInput | Prisma.ErpMenuUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ErpMenuCreateManyParentInputEnvelope
+  set?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  disconnect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  delete?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  connect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  update?: Prisma.ErpMenuUpdateWithWhereUniqueWithoutParentInput | Prisma.ErpMenuUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ErpMenuUpdateManyWithWhereWithoutParentInput | Prisma.ErpMenuUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ErpMenuScalarWhereInput | Prisma.ErpMenuScalarWhereInput[]
+}
+
+export type ErpMenuUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput> | Prisma.ErpMenuCreateWithoutParentInput[] | Prisma.ErpMenuUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ErpMenuCreateOrConnectWithoutParentInput | Prisma.ErpMenuCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ErpMenuUpsertWithWhereUniqueWithoutParentInput | Prisma.ErpMenuUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ErpMenuCreateManyParentInputEnvelope
+  set?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  disconnect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  delete?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  connect?: Prisma.ErpMenuWhereUniqueInput | Prisma.ErpMenuWhereUniqueInput[]
+  update?: Prisma.ErpMenuUpdateWithWhereUniqueWithoutParentInput | Prisma.ErpMenuUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ErpMenuUpdateManyWithWhereWithoutParentInput | Prisma.ErpMenuUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ErpMenuScalarWhereInput | Prisma.ErpMenuScalarWhereInput[]
 }
 
 export type ErpMenuCreateNestedOneWithoutPermissionsInput = {
@@ -449,15 +575,160 @@ export type ErpMenuUpdateOneRequiredWithoutPermissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ErpMenuUpdateToOneWithWhereWithoutPermissionsInput, Prisma.ErpMenuUpdateWithoutPermissionsInput>, Prisma.ErpMenuUncheckedUpdateWithoutPermissionsInput>
 }
 
+export type ErpMenuCreateWithoutChildrenInput = {
+  id?: string
+  key: string
+  label: string
+  description: string
+  path?: string | null
+  sortOrder?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent?: Prisma.ErpMenuCreateNestedOneWithoutChildrenInput
+  permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutMenuInput
+}
+
+export type ErpMenuUncheckedCreateWithoutChildrenInput = {
+  id?: string
+  key: string
+  label: string
+  description: string
+  path?: string | null
+  parentId?: string | null
+  sortOrder?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutMenuInput
+}
+
+export type ErpMenuCreateOrConnectWithoutChildrenInput = {
+  where: Prisma.ErpMenuWhereUniqueInput
+  create: Prisma.XOR<Prisma.ErpMenuCreateWithoutChildrenInput, Prisma.ErpMenuUncheckedCreateWithoutChildrenInput>
+}
+
+export type ErpMenuCreateWithoutParentInput = {
+  id?: string
+  key: string
+  label: string
+  description: string
+  path?: string | null
+  sortOrder?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ErpMenuCreateNestedManyWithoutParentInput
+  permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutMenuInput
+}
+
+export type ErpMenuUncheckedCreateWithoutParentInput = {
+  id?: string
+  key: string
+  label: string
+  description: string
+  path?: string | null
+  sortOrder?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ErpMenuUncheckedCreateNestedManyWithoutParentInput
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutMenuInput
+}
+
+export type ErpMenuCreateOrConnectWithoutParentInput = {
+  where: Prisma.ErpMenuWhereUniqueInput
+  create: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput>
+}
+
+export type ErpMenuCreateManyParentInputEnvelope = {
+  data: Prisma.ErpMenuCreateManyParentInput | Prisma.ErpMenuCreateManyParentInput[]
+  skipDuplicates?: boolean
+}
+
+export type ErpMenuUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.ErpMenuUpdateWithoutChildrenInput, Prisma.ErpMenuUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.ErpMenuCreateWithoutChildrenInput, Prisma.ErpMenuUncheckedCreateWithoutChildrenInput>
+  where?: Prisma.ErpMenuWhereInput
+}
+
+export type ErpMenuUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.ErpMenuWhereInput
+  data: Prisma.XOR<Prisma.ErpMenuUpdateWithoutChildrenInput, Prisma.ErpMenuUncheckedUpdateWithoutChildrenInput>
+}
+
+export type ErpMenuUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ErpMenuUpdateOneWithoutChildrenNestedInput
+  permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutMenuNestedInput
+}
+
+export type ErpMenuUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutMenuNestedInput
+}
+
+export type ErpMenuUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ErpMenuWhereUniqueInput
+  update: Prisma.XOR<Prisma.ErpMenuUpdateWithoutParentInput, Prisma.ErpMenuUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.ErpMenuCreateWithoutParentInput, Prisma.ErpMenuUncheckedCreateWithoutParentInput>
+}
+
+export type ErpMenuUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ErpMenuWhereUniqueInput
+  data: Prisma.XOR<Prisma.ErpMenuUpdateWithoutParentInput, Prisma.ErpMenuUncheckedUpdateWithoutParentInput>
+}
+
+export type ErpMenuUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.ErpMenuScalarWhereInput
+  data: Prisma.XOR<Prisma.ErpMenuUpdateManyMutationInput, Prisma.ErpMenuUncheckedUpdateManyWithoutParentInput>
+}
+
+export type ErpMenuScalarWhereInput = {
+  AND?: Prisma.ErpMenuScalarWhereInput | Prisma.ErpMenuScalarWhereInput[]
+  OR?: Prisma.ErpMenuScalarWhereInput[]
+  NOT?: Prisma.ErpMenuScalarWhereInput | Prisma.ErpMenuScalarWhereInput[]
+  id?: Prisma.StringFilter<"ErpMenu"> | string
+  key?: Prisma.StringFilter<"ErpMenu"> | string
+  label?: Prisma.StringFilter<"ErpMenu"> | string
+  description?: Prisma.StringFilter<"ErpMenu"> | string
+  path?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
+  parentId?: Prisma.StringNullableFilter<"ErpMenu"> | string | null
+  sortOrder?: Prisma.IntFilter<"ErpMenu"> | number
+  isActive?: Prisma.BoolFilter<"ErpMenu"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"ErpMenu"> | Date | string
+}
+
 export type ErpMenuCreateWithoutPermissionsInput = {
   id?: string
   key: string
   label: string
   description: string
+  path?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  parent?: Prisma.ErpMenuCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ErpMenuCreateNestedManyWithoutParentInput
 }
 
 export type ErpMenuUncheckedCreateWithoutPermissionsInput = {
@@ -465,10 +736,13 @@ export type ErpMenuUncheckedCreateWithoutPermissionsInput = {
   key: string
   label: string
   description: string
+  path?: string | null
+  parentId?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  children?: Prisma.ErpMenuUncheckedCreateNestedManyWithoutParentInput
 }
 
 export type ErpMenuCreateOrConnectWithoutPermissionsInput = {
@@ -492,10 +766,13 @@ export type ErpMenuUpdateWithoutPermissionsInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ErpMenuUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ErpMenuUpdateManyWithoutParentNestedInput
 }
 
 export type ErpMenuUncheckedUpdateWithoutPermissionsInput = {
@@ -503,6 +780,61 @@ export type ErpMenuUncheckedUpdateWithoutPermissionsInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
   label?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ErpMenuUncheckedUpdateManyWithoutParentNestedInput
+}
+
+export type ErpMenuCreateManyParentInput = {
+  id?: string
+  key: string
+  label: string
+  description: string
+  path?: string | null
+  sortOrder?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ErpMenuUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ErpMenuUpdateManyWithoutParentNestedInput
+  permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutMenuNestedInput
+}
+
+export type ErpMenuUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ErpMenuUncheckedUpdateManyWithoutParentNestedInput
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutMenuNestedInput
+}
+
+export type ErpMenuUncheckedUpdateManyWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -515,10 +847,12 @@ export type ErpMenuUncheckedUpdateWithoutPermissionsInput = {
  */
 
 export type ErpMenuCountOutputType = {
+  children: number
   permissions: number
 }
 
 export type ErpMenuCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  children?: boolean | ErpMenuCountOutputTypeCountChildrenArgs
   permissions?: boolean | ErpMenuCountOutputTypeCountPermissionsArgs
 }
 
@@ -535,6 +869,13 @@ export type ErpMenuCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * ErpMenuCountOutputType without action
  */
+export type ErpMenuCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ErpMenuWhereInput
+}
+
+/**
+ * ErpMenuCountOutputType without action
+ */
 export type ErpMenuCountOutputTypeCountPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DepartmentMenuPermissionWhereInput
 }
@@ -545,10 +886,14 @@ export type ErpMenuSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   key?: boolean
   label?: boolean
   description?: boolean
+  path?: boolean
+  parentId?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
+  children?: boolean | Prisma.ErpMenu$childrenArgs<ExtArgs>
   permissions?: boolean | Prisma.ErpMenu$permissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ErpMenuCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["erpMenu"]>
@@ -558,10 +903,13 @@ export type ErpMenuSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   key?: boolean
   label?: boolean
   description?: boolean
+  path?: boolean
+  parentId?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
 }, ExtArgs["result"]["erpMenu"]>
 
 export type ErpMenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -569,10 +917,13 @@ export type ErpMenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   key?: boolean
   label?: boolean
   description?: boolean
+  path?: boolean
+  parentId?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
 }, ExtArgs["result"]["erpMenu"]>
 
 export type ErpMenuSelectScalar = {
@@ -580,23 +931,33 @@ export type ErpMenuSelectScalar = {
   key?: boolean
   label?: boolean
   description?: boolean
+  path?: boolean
+  parentId?: boolean
   sortOrder?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ErpMenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "label" | "description" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["erpMenu"]>
+export type ErpMenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "label" | "description" | "path" | "parentId" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["erpMenu"]>
 export type ErpMenuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
+  children?: boolean | Prisma.ErpMenu$childrenArgs<ExtArgs>
   permissions?: boolean | Prisma.ErpMenu$permissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ErpMenuCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ErpMenuIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ErpMenuIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ErpMenuIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
+}
+export type ErpMenuIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.ErpMenu$parentArgs<ExtArgs>
+}
 
 export type $ErpMenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ErpMenu"
   objects: {
+    parent: Prisma.$ErpMenuPayload<ExtArgs> | null
+    children: Prisma.$ErpMenuPayload<ExtArgs>[]
     permissions: Prisma.$DepartmentMenuPermissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -604,6 +965,8 @@ export type $ErpMenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     key: string
     label: string
     description: string
+    path: string | null
+    parentId: string | null
     sortOrder: number
     isActive: boolean
     createdAt: Date
@@ -1002,6 +1365,8 @@ readonly fields: ErpMenuFieldRefs;
  */
 export interface Prisma__ErpMenuClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  parent<T extends Prisma.ErpMenu$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ErpMenu$parentArgs<ExtArgs>>): Prisma.Prisma__ErpMenuClient<runtime.Types.Result.GetResult<Prisma.$ErpMenuPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  children<T extends Prisma.ErpMenu$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ErpMenu$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ErpMenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissions<T extends Prisma.ErpMenu$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ErpMenu$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentMenuPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1036,6 +1401,8 @@ export interface ErpMenuFieldRefs {
   readonly key: Prisma.FieldRef<"ErpMenu", 'String'>
   readonly label: Prisma.FieldRef<"ErpMenu", 'String'>
   readonly description: Prisma.FieldRef<"ErpMenu", 'String'>
+  readonly path: Prisma.FieldRef<"ErpMenu", 'String'>
+  readonly parentId: Prisma.FieldRef<"ErpMenu", 'String'>
   readonly sortOrder: Prisma.FieldRef<"ErpMenu", 'Int'>
   readonly isActive: Prisma.FieldRef<"ErpMenu", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"ErpMenu", 'DateTime'>
@@ -1294,6 +1661,10 @@ export type ErpMenuCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.ErpMenuCreateManyInput | Prisma.ErpMenuCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ErpMenuIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1364,6 +1735,10 @@ export type ErpMenuUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many ErpMenus to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ErpMenuIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1430,6 +1805,49 @@ export type ErpMenuDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many ErpMenus to delete.
    */
   limit?: number
+}
+
+/**
+ * ErpMenu.parent
+ */
+export type ErpMenu$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ErpMenu
+   */
+  select?: Prisma.ErpMenuSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ErpMenu
+   */
+  omit?: Prisma.ErpMenuOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ErpMenuInclude<ExtArgs> | null
+  where?: Prisma.ErpMenuWhereInput
+}
+
+/**
+ * ErpMenu.children
+ */
+export type ErpMenu$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ErpMenu
+   */
+  select?: Prisma.ErpMenuSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ErpMenu
+   */
+  omit?: Prisma.ErpMenuOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ErpMenuInclude<ExtArgs> | null
+  where?: Prisma.ErpMenuWhereInput
+  orderBy?: Prisma.ErpMenuOrderByWithRelationInput | Prisma.ErpMenuOrderByWithRelationInput[]
+  cursor?: Prisma.ErpMenuWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ErpMenuScalarFieldEnum | Prisma.ErpMenuScalarFieldEnum[]
 }
 
 /**
