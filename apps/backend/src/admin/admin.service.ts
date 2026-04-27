@@ -8,22 +8,27 @@ import {
 } from "./dto";
 
 const defaultMenus = [
-  { key: "master", label: "ข้อมูลหลัก", description: "ข้อมูลหลัก", sortOrder: 10 },
   {
-    key: "master.customers",
-    label: "ลูกค้า",
-    description: "สร้างและจัดการข้อมูลลูกค้า",
-    path: "/master/customers",
-    parentKey: "master",
-    sortOrder: 10
-  },
-  {
-    key: "master.products",
-    label: "สินค้า",
-    description: "สร้างและจัดการข้อมูลสินค้า",
-    path: "/master/products",
-    parentKey: "master",
-    sortOrder: 20
+    key: "master",
+    label: "ข้อมูลหลัก",
+    description: "จัดการข้อมูลพื้นฐานของระบบ",
+    sortOrder: 10,
+    subMenus: [
+      {
+        key: "master.customers",
+        label: "ลูกค้า",
+        description: "สร้างและจัดการข้อมูลลูกค้า",
+        path: "/master/customers",
+        sortOrder: 10
+      },
+      {
+        key: "master.products",
+        label: "สินค้า",
+        description: "สร้างและจัดการข้อมูลสินค้า",
+        path: "/master/products",
+        sortOrder: 20
+      }
+    ]
   }
 ];
 
@@ -108,6 +113,15 @@ export class AdminService {
       include: {
         permissions: {
           where: { departmentId }
+        },
+        subMenus: {
+          where: { isActive: true },
+          include: {
+            permissions: {
+              where: { departmentId }
+            }
+          },
+          orderBy: [{ sortOrder: "asc" }, { label: "asc" }]
         }
       },
       orderBy: [{ sortOrder: "asc" }, { label: "asc" }]
@@ -117,7 +131,14 @@ export class AdminService {
       key: menu.key,
       label: menu.label,
       description: menu.description,
-      canView: Boolean(menu.permissions[0]?.canView)
+      canView: Boolean(menu.permissions[0]?.canView),
+      children: menu.subMenus.map((subMenu) => ({
+        key: subMenu.key,
+        label: subMenu.label,
+        description: subMenu.description,
+        path: subMenu.path,
+        canView: Boolean(subMenu.permissions[0]?.canView)
+      }))
     }));
   }
 
@@ -137,13 +158,18 @@ export class AdminService {
       throw new NotFoundException("Department not found");
     }
 
-    const menus = await this.prisma.erpMenu.findMany({
-      where: { isActive: true }
-    });
     const allowedKeys = new Set(dto.menuKeys);
+    const [menus, subMenus] = await Promise.all([
+      this.prisma.erpMenu.findMany({
+        where: { isActive: true }
+      }),
+      this.prisma.erpSubMenu.findMany({
+        where: { isActive: true }
+      })
+    ]);
 
-    await this.prisma.$transaction(
-      menus.map((menu) =>
+    await this.prisma.$transaction([
+      ...menus.map((menu) =>
         this.prisma.departmentMenuPermission.upsert({
           where: {
             departmentId_menuId: {
@@ -160,37 +186,69 @@ export class AdminService {
             canView: allowedKeys.has(menu.key)
           }
         })
+      ),
+      ...subMenus.map((subMenu) =>
+        this.prisma.departmentSubMenuPermission.upsert({
+          where: {
+            departmentId_subMenuId: {
+              departmentId,
+              subMenuId: subMenu.id
+            }
+          },
+          create: {
+            departmentId,
+            subMenuId: subMenu.id,
+            canView: allowedKeys.has(subMenu.key)
+          },
+          update: {
+            canView: allowedKeys.has(subMenu.key)
+          }
+        })
       )
-    );
+    ]);
 
     return this.findMenuPermissions(user, departmentId);
   }
 
   private async ensureDefaultMenus() {
     for (const menu of defaultMenus) {
-      const parent = menu.parentKey
-        ? await this.prisma.erpMenu.findUnique({ where: { key: menu.parentKey } })
-        : null;
-
-      await this.prisma.erpMenu.upsert({
+      const parent = await this.prisma.erpMenu.upsert({
         where: { key: menu.key },
         create: {
           key: menu.key,
           label: menu.label,
           description: menu.description,
-          path: menu.path,
-          parentId: parent?.id,
           sortOrder: menu.sortOrder
         },
         update: {
           label: menu.label,
           description: menu.description,
-          path: menu.path,
-          parentId: parent?.id,
           sortOrder: menu.sortOrder,
           isActive: true
         }
       });
+
+      for (const subMenu of menu.subMenus) {
+        await this.prisma.erpSubMenu.upsert({
+          where: { key: subMenu.key },
+          create: {
+            menuId: parent.id,
+            key: subMenu.key,
+            label: subMenu.label,
+            description: subMenu.description,
+            path: subMenu.path,
+            sortOrder: subMenu.sortOrder
+          },
+          update: {
+            menuId: parent.id,
+            label: subMenu.label,
+            description: subMenu.description,
+            path: subMenu.path,
+            sortOrder: subMenu.sortOrder,
+            isActive: true
+          }
+        });
+      }
     }
   }
 

@@ -200,6 +200,7 @@ export type DepartmentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   users?: Prisma.UserListRelationFilter
   permissions?: Prisma.DepartmentMenuPermissionListRelationFilter
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionListRelationFilter
 }
 
 export type DepartmentOrderByWithRelationInput = {
@@ -212,6 +213,7 @@ export type DepartmentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
   permissions?: Prisma.DepartmentMenuPermissionOrderByRelationAggregateInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionOrderByRelationAggregateInput
 }
 
 export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -227,6 +229,7 @@ export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   users?: Prisma.UserListRelationFilter
   permissions?: Prisma.DepartmentMenuPermissionListRelationFilter
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionListRelationFilter
 }, "id" | "code">
 
 export type DepartmentOrderByWithAggregationInput = {
@@ -265,6 +268,7 @@ export type DepartmentCreateInput = {
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
   permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateInput = {
@@ -277,6 +281,7 @@ export type DepartmentUncheckedCreateInput = {
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
   permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUpdateInput = {
@@ -289,6 +294,7 @@ export type DepartmentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
   permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateInput = {
@@ -301,6 +307,7 @@ export type DepartmentUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
   permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateManyInput = {
@@ -403,6 +410,20 @@ export type DepartmentUpdateOneRequiredWithoutPermissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DepartmentUpdateToOneWithWhereWithoutPermissionsInput, Prisma.DepartmentUpdateWithoutPermissionsInput>, Prisma.DepartmentUncheckedUpdateWithoutPermissionsInput>
 }
 
+export type DepartmentCreateNestedOneWithoutSubMenuPermissionsInput = {
+  create?: Prisma.XOR<Prisma.DepartmentCreateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedCreateWithoutSubMenuPermissionsInput>
+  connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutSubMenuPermissionsInput
+  connect?: Prisma.DepartmentWhereUniqueInput
+}
+
+export type DepartmentUpdateOneRequiredWithoutSubMenuPermissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DepartmentCreateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedCreateWithoutSubMenuPermissionsInput>
+  connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutSubMenuPermissionsInput
+  upsert?: Prisma.DepartmentUpsertWithoutSubMenuPermissionsInput
+  connect?: Prisma.DepartmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DepartmentUpdateToOneWithWhereWithoutSubMenuPermissionsInput, Prisma.DepartmentUpdateWithoutSubMenuPermissionsInput>, Prisma.DepartmentUncheckedUpdateWithoutSubMenuPermissionsInput>
+}
+
 export type DepartmentCreateWithoutUsersInput = {
   id?: string
   code: string
@@ -412,6 +433,7 @@ export type DepartmentCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutUsersInput = {
@@ -423,6 +445,7 @@ export type DepartmentUncheckedCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutUsersInput = {
@@ -450,6 +473,7 @@ export type DepartmentUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutUsersInput = {
@@ -461,6 +485,7 @@ export type DepartmentUncheckedUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateWithoutPermissionsInput = {
@@ -472,6 +497,7 @@ export type DepartmentCreateWithoutPermissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutPermissionsInput = {
@@ -483,6 +509,7 @@ export type DepartmentUncheckedCreateWithoutPermissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutPermissionsInput = {
@@ -510,6 +537,7 @@ export type DepartmentUpdateWithoutPermissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutPermissionsInput = {
@@ -521,6 +549,71 @@ export type DepartmentUncheckedUpdateWithoutPermissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
+  subMenuPermissions?: Prisma.DepartmentSubMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
+}
+
+export type DepartmentCreateWithoutSubMenuPermissionsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
+  permissions?: Prisma.DepartmentMenuPermissionCreateNestedManyWithoutDepartmentInput
+}
+
+export type DepartmentUncheckedCreateWithoutSubMenuPermissionsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedCreateNestedManyWithoutDepartmentInput
+}
+
+export type DepartmentCreateOrConnectWithoutSubMenuPermissionsInput = {
+  where: Prisma.DepartmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DepartmentCreateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedCreateWithoutSubMenuPermissionsInput>
+}
+
+export type DepartmentUpsertWithoutSubMenuPermissionsInput = {
+  update: Prisma.XOR<Prisma.DepartmentUpdateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedUpdateWithoutSubMenuPermissionsInput>
+  create: Prisma.XOR<Prisma.DepartmentCreateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedCreateWithoutSubMenuPermissionsInput>
+  where?: Prisma.DepartmentWhereInput
+}
+
+export type DepartmentUpdateToOneWithWhereWithoutSubMenuPermissionsInput = {
+  where?: Prisma.DepartmentWhereInput
+  data: Prisma.XOR<Prisma.DepartmentUpdateWithoutSubMenuPermissionsInput, Prisma.DepartmentUncheckedUpdateWithoutSubMenuPermissionsInput>
+}
+
+export type DepartmentUpdateWithoutSubMenuPermissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
+  permissions?: Prisma.DepartmentMenuPermissionUpdateManyWithoutDepartmentNestedInput
+}
+
+export type DepartmentUncheckedUpdateWithoutSubMenuPermissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
+  permissions?: Prisma.DepartmentMenuPermissionUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 
@@ -531,11 +624,13 @@ export type DepartmentUncheckedUpdateWithoutPermissionsInput = {
 export type DepartmentCountOutputType = {
   users: number
   permissions: number
+  subMenuPermissions: number
 }
 
 export type DepartmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | DepartmentCountOutputTypeCountUsersArgs
   permissions?: boolean | DepartmentCountOutputTypeCountPermissionsArgs
+  subMenuPermissions?: boolean | DepartmentCountOutputTypeCountSubMenuPermissionsArgs
 }
 
 /**
@@ -562,6 +657,13 @@ export type DepartmentCountOutputTypeCountPermissionsArgs<ExtArgs extends runtim
   where?: Prisma.DepartmentMenuPermissionWhereInput
 }
 
+/**
+ * DepartmentCountOutputType without action
+ */
+export type DepartmentCountOutputTypeCountSubMenuPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DepartmentSubMenuPermissionWhereInput
+}
+
 
 export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -573,6 +675,7 @@ export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedAt?: boolean
   users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   permissions?: boolean | Prisma.Department$permissionsArgs<ExtArgs>
+  subMenuPermissions?: boolean | Prisma.Department$subMenuPermissionsArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["department"]>
 
@@ -610,6 +713,7 @@ export type DepartmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type DepartmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   permissions?: boolean | Prisma.Department$permissionsArgs<ExtArgs>
+  subMenuPermissions?: boolean | Prisma.Department$subMenuPermissionsArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DepartmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -620,6 +724,7 @@ export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     users: Prisma.$UserPayload<ExtArgs>[]
     permissions: Prisma.$DepartmentMenuPermissionPayload<ExtArgs>[]
+    subMenuPermissions: Prisma.$DepartmentSubMenuPermissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1025,6 +1130,7 @@ export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.Department$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   permissions<T extends Prisma.Department$permissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentMenuPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subMenuPermissions<T extends Prisma.Department$subMenuPermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$subMenuPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentSubMenuPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1499,6 +1605,30 @@ export type Department$permissionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.DepartmentMenuPermissionScalarFieldEnum | Prisma.DepartmentMenuPermissionScalarFieldEnum[]
+}
+
+/**
+ * Department.subMenuPermissions
+ */
+export type Department$subMenuPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DepartmentSubMenuPermission
+   */
+  select?: Prisma.DepartmentSubMenuPermissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DepartmentSubMenuPermission
+   */
+  omit?: Prisma.DepartmentSubMenuPermissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentSubMenuPermissionInclude<ExtArgs> | null
+  where?: Prisma.DepartmentSubMenuPermissionWhereInput
+  orderBy?: Prisma.DepartmentSubMenuPermissionOrderByWithRelationInput | Prisma.DepartmentSubMenuPermissionOrderByWithRelationInput[]
+  cursor?: Prisma.DepartmentSubMenuPermissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DepartmentSubMenuPermissionScalarFieldEnum | Prisma.DepartmentSubMenuPermissionScalarFieldEnum[]
 }
 
 /**

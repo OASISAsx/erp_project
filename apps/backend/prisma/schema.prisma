@@ -34,6 +34,7 @@ model Department {
   isActive    Boolean                    @default(true) @map("is_active")
   users       User[]
   permissions DepartmentMenuPermission[]
+  subMenuPermissions DepartmentSubMenuPermission[]
   createdAt   DateTime                   @default(now()) @map("created_at")
   updatedAt   DateTime                   @updatedAt @map("updated_at")
 
@@ -45,10 +46,7 @@ model ErpMenu {
   key         String                     @unique
   label       String
   description String
-  path        String?
-  parentId    String?                    @map("parent_id")
-  parent      ErpMenu?                   @relation("ErpMenuHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  children    ErpMenu[]                  @relation("ErpMenuHierarchy")
+  subMenus    ErpSubMenu[]
   sortOrder   Int                        @default(0) @map("sort_order")
   isActive    Boolean                    @default(true) @map("is_active")
   permissions DepartmentMenuPermission[]
@@ -56,6 +54,23 @@ model ErpMenu {
   updatedAt   DateTime                   @updatedAt @map("updated_at")
 
   @@map("erp_menus")
+}
+
+model ErpSubMenu {
+  id          String                        @id @default(cuid())
+  menuId      String                        @map("menu_id")
+  key         String                        @unique
+  label       String
+  description String
+  path        String
+  sortOrder   Int                           @default(0) @map("sort_order")
+  isActive    Boolean                       @default(true) @map("is_active")
+  menu        ErpMenu                       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  permissions DepartmentSubMenuPermission[]
+  createdAt   DateTime                      @default(now()) @map("created_at")
+  updatedAt   DateTime                      @updatedAt @map("updated_at")
+
+  @@map("erp_sub_menus")
 }
 
 model DepartmentMenuPermission {
@@ -70,4 +85,47 @@ model DepartmentMenuPermission {
 
   @@unique([departmentId, menuId])
   @@map("department_menu_permissions")
+}
+
+model DepartmentSubMenuPermission {
+  id           String     @id @default(cuid())
+  departmentId String     @map("department_id")
+  subMenuId    String     @map("sub_menu_id")
+  canView      Boolean    @default(true) @map("can_view")
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  subMenu      ErpSubMenu @relation(fields: [subMenuId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@unique([departmentId, subMenuId])
+  @@map("department_sub_menu_permissions")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("customers")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  description String?
+  unit        String   @default("ชิ้น")
+  price       Decimal  @default(0) @db.Decimal(12, 2)
+  stock       Int      @default(0)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
 }

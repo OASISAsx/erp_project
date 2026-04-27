@@ -28,6 +28,36 @@ function getErrorMessage(error: unknown) {
   return "เกิดข้อผิดพลาดในการเชื่อมต่อ API";
 }
 
+function setPermission(items: MenuPermission[], menuKey: string, canView: boolean): MenuPermission[] {
+  const nextItems = items.map((item) => {
+    if (item.key === menuKey) {
+      return {
+        ...item,
+        canView,
+        children: item.children?.map((child) => ({ ...child, canView }))
+      };
+    }
+
+    return {
+      ...item,
+      children: item.children ? setPermission(item.children, menuKey, canView) : undefined
+    };
+  });
+
+  return nextItems.map((item) =>
+    item.children?.some((child) => child.canView)
+      ? { ...item, canView: true }
+      : item
+  );
+}
+
+function collectVisibleKeys(items: MenuPermission[]): string[] {
+  return items.flatMap((item) => [
+    ...(item.canView ? [item.key] : []),
+    ...collectVisibleKeys(item.children ?? [])
+  ]);
+}
+
 export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
   departments: [],
   users: [],
@@ -42,9 +72,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
 
   setMenuPermission(menuKey, canView) {
     set((state) => ({
-      menuPermissions: state.menuPermissions.map((item) =>
-        item.key === menuKey ? { ...item, canView } : item
-      )
+      menuPermissions: setPermission(state.menuPermissions, menuKey, canView)
     }));
   },
 
@@ -145,9 +173,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
     set({ saving: true, error: undefined });
 
     try {
-      const menuKeys = get()
-        .menuPermissions.filter((item) => item.canView)
-        .map((item) => item.key);
+      const menuKeys = collectVisibleKeys(get().menuPermissions);
       const response = await apiClient.put<MenuPermission[]>(
         `/admin/menu-permissions/${departmentId}`,
         { menuKeys },

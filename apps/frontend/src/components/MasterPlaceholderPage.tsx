@@ -25,6 +25,9 @@ export function MasterPlaceholderPage({
     <Layout className={styles.shell}>
       <Layout.Header className={styles.navbar}>
         <div className={styles.brand}>ERP</div>
+        <Button icon={<AppstoreOutlined />} onClick={() => router.push("/master")}>
+          ข้อมูลหลัก
+        </Button>
         <Button icon={<AppstoreOutlined />} onClick={() => router.push("/main-menu")}>
           เมนูหลัก
         </Button>

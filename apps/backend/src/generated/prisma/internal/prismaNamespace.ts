@@ -387,7 +387,11 @@ export const ModelName = {
   User: 'User',
   Department: 'Department',
   ErpMenu: 'ErpMenu',
-  DepartmentMenuPermission: 'DepartmentMenuPermission'
+  ErpSubMenu: 'ErpSubMenu',
+  DepartmentMenuPermission: 'DepartmentMenuPermission',
+  DepartmentSubMenuPermission: 'DepartmentSubMenuPermission',
+  Customer: 'Customer',
+  Product: 'Product'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "department" | "erpMenu" | "departmentMenuPermission"
+    modelProps: "user" | "department" | "erpMenu" | "erpSubMenu" | "departmentMenuPermission" | "departmentSubMenuPermission" | "customer" | "product"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,6 +633,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ErpSubMenu: {
+      payload: Prisma.$ErpSubMenuPayload<ExtArgs>
+      fields: Prisma.ErpSubMenuFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ErpSubMenuFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ErpSubMenuFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        findFirst: {
+          args: Prisma.ErpSubMenuFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ErpSubMenuFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        findMany: {
+          args: Prisma.ErpSubMenuFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>[]
+        }
+        create: {
+          args: Prisma.ErpSubMenuCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        createMany: {
+          args: Prisma.ErpSubMenuCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ErpSubMenuCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>[]
+        }
+        delete: {
+          args: Prisma.ErpSubMenuDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        update: {
+          args: Prisma.ErpSubMenuUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        deleteMany: {
+          args: Prisma.ErpSubMenuDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ErpSubMenuUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ErpSubMenuUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>[]
+        }
+        upsert: {
+          args: Prisma.ErpSubMenuUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ErpSubMenuPayload>
+        }
+        aggregate: {
+          args: Prisma.ErpSubMenuAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateErpSubMenu>
+        }
+        groupBy: {
+          args: Prisma.ErpSubMenuGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ErpSubMenuGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ErpSubMenuCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ErpSubMenuCountAggregateOutputType> | number
+        }
+      }
+    }
     DepartmentMenuPermission: {
       payload: Prisma.$DepartmentMenuPermissionPayload<ExtArgs>
       fields: Prisma.DepartmentMenuPermissionFieldRefs
@@ -700,6 +778,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DepartmentMenuPermissionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DepartmentMenuPermissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    DepartmentSubMenuPermission: {
+      payload: Prisma.$DepartmentSubMenuPermissionPayload<ExtArgs>
+      fields: Prisma.DepartmentSubMenuPermissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DepartmentSubMenuPermissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DepartmentSubMenuPermissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        findFirst: {
+          args: Prisma.DepartmentSubMenuPermissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DepartmentSubMenuPermissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        findMany: {
+          args: Prisma.DepartmentSubMenuPermissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>[]
+        }
+        create: {
+          args: Prisma.DepartmentSubMenuPermissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        createMany: {
+          args: Prisma.DepartmentSubMenuPermissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DepartmentSubMenuPermissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>[]
+        }
+        delete: {
+          args: Prisma.DepartmentSubMenuPermissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        update: {
+          args: Prisma.DepartmentSubMenuPermissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DepartmentSubMenuPermissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DepartmentSubMenuPermissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DepartmentSubMenuPermissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DepartmentSubMenuPermissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DepartmentSubMenuPermissionPayload>
+        }
+        aggregate: {
+          args: Prisma.DepartmentSubMenuPermissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDepartmentSubMenuPermission>
+        }
+        groupBy: {
+          args: Prisma.DepartmentSubMenuPermissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DepartmentSubMenuPermissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DepartmentSubMenuPermissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DepartmentSubMenuPermissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Customer: {
+      payload: Prisma.$CustomerPayload<ExtArgs>
+      fields: Prisma.CustomerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CustomerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CustomerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        findFirst: {
+          args: Prisma.CustomerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CustomerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        findMany: {
+          args: Prisma.CustomerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+        }
+        create: {
+          args: Prisma.CustomerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        createMany: {
+          args: Prisma.CustomerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CustomerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+        }
+        delete: {
+          args: Prisma.CustomerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        update: {
+          args: Prisma.CustomerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        deleteMany: {
+          args: Prisma.CustomerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CustomerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CustomerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+        }
+        upsert: {
+          args: Prisma.CustomerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerPayload>
+        }
+        aggregate: {
+          args: Prisma.CustomerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCustomer>
+        }
+        groupBy: {
+          args: Prisma.CustomerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CustomerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomerCountAggregateOutputType> | number
+        }
+      }
+    }
+    Product: {
+      payload: Prisma.$ProductPayload<ExtArgs>
+      fields: Prisma.ProductFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        findMany: {
+          args: Prisma.ProductFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>[]
+        }
+        create: {
+          args: Prisma.ProductCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        createMany: {
+          args: Prisma.ProductCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        update: {
+          args: Prisma.ProductUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProduct>
+        }
+        groupBy: {
+          args: Prisma.ProductGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductCountAggregateOutputType> | number
         }
       }
     }
@@ -775,8 +1075,6 @@ export const ErpMenuScalarFieldEnum = {
   key: 'key',
   label: 'label',
   description: 'description',
-  path: 'path',
-  parentId: 'parentId',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -784,6 +1082,22 @@ export const ErpMenuScalarFieldEnum = {
 } as const
 
 export type ErpMenuScalarFieldEnum = (typeof ErpMenuScalarFieldEnum)[keyof typeof ErpMenuScalarFieldEnum]
+
+
+export const ErpSubMenuScalarFieldEnum = {
+  id: 'id',
+  menuId: 'menuId',
+  key: 'key',
+  label: 'label',
+  description: 'description',
+  path: 'path',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ErpSubMenuScalarFieldEnum = (typeof ErpSubMenuScalarFieldEnum)[keyof typeof ErpSubMenuScalarFieldEnum]
 
 
 export const DepartmentMenuPermissionScalarFieldEnum = {
@@ -796,6 +1110,49 @@ export const DepartmentMenuPermissionScalarFieldEnum = {
 } as const
 
 export type DepartmentMenuPermissionScalarFieldEnum = (typeof DepartmentMenuPermissionScalarFieldEnum)[keyof typeof DepartmentMenuPermissionScalarFieldEnum]
+
+
+export const DepartmentSubMenuPermissionScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  subMenuId: 'subMenuId',
+  canView: 'canView',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentSubMenuPermissionScalarFieldEnum = (typeof DepartmentSubMenuPermissionScalarFieldEnum)[keyof typeof DepartmentSubMenuPermissionScalarFieldEnum]
+
+
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const ProductScalarFieldEnum = {
+  id: 'id',
+  sku: 'sku',
+  name: 'name',
+  description: 'description',
+  unit: 'unit',
+  price: 'price',
+  stock: 'stock',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -874,6 +1231,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -1003,7 +1374,11 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   department?: Prisma.DepartmentOmit
   erpMenu?: Prisma.ErpMenuOmit
+  erpSubMenu?: Prisma.ErpSubMenuOmit
   departmentMenuPermission?: Prisma.DepartmentMenuPermissionOmit
+  departmentSubMenuPermission?: Prisma.DepartmentSubMenuPermissionOmit
+  customer?: Prisma.CustomerOmit
+  product?: Prisma.ProductOmit
 }
 
 /* Types for Logging */

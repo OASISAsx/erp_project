@@ -19,7 +19,9 @@ export type MenuPermission = {
   key: string;
   label: string;
   description: string;
+  path?: string | null;
   canView: boolean;
+  children?: MenuPermission[];
 };
 
 export type DepartmentForm = {

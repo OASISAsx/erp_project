@@ -82,6 +82,17 @@
   border-radius: 8px;
 }
 
+.subMenuPermissionList {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding-left: 26px;
+
+  .menuPermissionItem {
+    background: #f8fafc;
+  }
+}
+
 .menuDescription {
   display: block;
   margin-top: 4px;

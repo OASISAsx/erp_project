@@ -22,7 +22,7 @@ import type { ColumnsType } from "antd/es/table";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useUserMenuPermissionStore } from "@/stores/userMenuPermissionStore";
-import type { DepartmentForm, UserRow } from "@/types/admin";
+import type { DepartmentForm, MenuPermission, UserRow } from "@/types/admin";
 import styles from "./page.module.scss";
 
 export default function UserMenuPermissionsPage() {
@@ -102,6 +102,21 @@ export default function UserMenuPermissionsPage() {
     }
   };
 
+  const renderMenuPermission = (item: MenuPermission) => (
+    <div className={styles.menuPermissionItem} key={item.key}>
+      <Checkbox checked={item.canView} onChange={(event) => setMenuPermission(item.key, event.target.checked)}>
+        <strong>{item.label}</strong>
+        <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
+      </Checkbox>
+
+      {item.children?.length ? (
+        <div className={styles.subMenuPermissionList}>
+          {item.children.map((child) => renderMenuPermission(child))}
+        </div>
+      ) : null}
+    </div>
+  );
+
   const userColumns: ColumnsType<UserRow> = [
     {
       title: "ผู้ใช้",
@@ -173,7 +188,7 @@ export default function UserMenuPermissionsPage() {
             <div>
               <Typography.Title level={3}>ตั้งค่าสิทธิ์เมนูผู้ใช้</Typography.Title>
               <Typography.Text type="secondary">
-                กำหนดแผนกของผู้ใช้ และเลือกเมนูหลักที่แต่ละแผนกมองเห็น
+                กำหนดแผนกของผู้ใช้ และเลือกเมนูหลักกับเมนูย่อยที่แต่ละแผนกมองเห็น
               </Typography.Text>
             </div>
           </div>
@@ -221,7 +236,9 @@ export default function UserMenuPermissionsPage() {
               <section className={styles.panel}>
                 <div className={styles.panelTitle}>
                   <Typography.Title level={4}>ผู้ใช้และแผนก</Typography.Title>
-                  <Typography.Text type="secondary">เลือกแผนกให้ user เพื่อรับสิทธิ์เมนูตามแผนกนั้น</Typography.Text>
+                  <Typography.Text type="secondary">
+                    เลือกแผนกให้ user เพื่อรับสิทธิ์เมนูตามแผนกนั้น
+                  </Typography.Text>
                 </div>
                 <Table
                   rowKey="id"
@@ -235,20 +252,12 @@ export default function UserMenuPermissionsPage() {
               <section className={styles.panel}>
                 <div className={styles.panelTitle}>
                   <Typography.Title level={4}>เมนูที่แผนกมองเห็น</Typography.Title>
-                  <Typography.Text type="secondary">ติ๊กเมนูหลักที่ต้องการให้แผนกนี้เห็น</Typography.Text>
+                  <Typography.Text type="secondary">
+                    ดึงทุกเมนูหลักพร้อม submenu จาก backend แล้วเลือกสิทธิ์ can_view ได้
+                  </Typography.Text>
                 </div>
                 <div className={styles.menuPermissionList}>
-                  {menuPermissions.map((item) => (
-                    <label className={styles.menuPermissionItem} key={item.key}>
-                      <Checkbox
-                        checked={item.canView}
-                        onChange={(event) => setMenuPermission(item.key, event.target.checked)}
-                      >
-                        <strong>{item.label}</strong>
-                        <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
-                      </Checkbox>
-                    </label>
-                  ))}
+                  {menuPermissions.map((item) => renderMenuPermission(item))}
                 </div>
                 <Button type="primary" block loading={saving} onClick={submitMenuPermissions} style={{ marginTop: 18 }}>
                   บันทึกสิทธิ์เมนู

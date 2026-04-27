@@ -67,6 +67,7 @@
   border-radius: 8px;
   background: #ffffff;
   color: #14212b;
+  cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 
   &:hover {
@@ -99,52 +100,12 @@
   line-height: 1.55;
 }
 
-.subMenuList {
-  width: 100%;
-  display: grid;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.subMenuButton {
-  width: 100%;
-  min-height: 62px;
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid #e2e8ef;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #14212b;
-  text-align: left;
-  cursor: pointer;
-
-  &:hover {
-    border-color: #1677ff;
-    background: #eef6ff;
-  }
-
-  strong,
-  small {
-    display: block;
-  }
-
-  small {
-    margin-top: 2px;
-    color: #667789;
-  }
-}
-
-.subMenuIcon {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  color: #0f5db8;
-  background: #eaf3ff;
+.moduleMeta {
+  margin-top: auto;
+  padding-top: 18px;
+  color: #1677ff;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 @media (max-width: 760px) {

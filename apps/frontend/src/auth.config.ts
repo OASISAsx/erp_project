@@ -12,7 +12,10 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = Boolean(auth?.user);
-      const isProtectedRoute = nextUrl.pathname.startsWith("/main-menu");
+      const isProtectedRoute =
+        nextUrl.pathname.startsWith("/main-menu") ||
+        nextUrl.pathname.startsWith("/settings") ||
+        nextUrl.pathname.startsWith("/master");
 
       if (isProtectedRoute) {
         return isLoggedIn;

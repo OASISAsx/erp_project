@@ -33,7 +33,27 @@ export type Department = Prisma.DepartmentModel
  */
 export type ErpMenu = Prisma.ErpMenuModel
 /**
+ * Model ErpSubMenu
+ * 
+ */
+export type ErpSubMenu = Prisma.ErpSubMenuModel
+/**
  * Model DepartmentMenuPermission
  * 
  */
 export type DepartmentMenuPermission = Prisma.DepartmentMenuPermissionModel
+/**
+ * Model DepartmentSubMenuPermission
+ * 
+ */
+export type DepartmentSubMenuPermission = Prisma.DepartmentSubMenuPermissionModel
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel
+/**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel

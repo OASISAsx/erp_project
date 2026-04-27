@@ -1,98 +1,163 @@
 # ERP Project Progress
 
+อัปเดตล่าสุด: 2026-04-27
+
 ## Tech Stack
 
-- Frontend: Next 16, React, Ant Design, SCSS
+- Frontend: Next 16, React 19, Ant Design 5, SCSS
+- Frontend state/API: NextAuth, Axios, Zustand
 - Backend: NestJS
-- Database: PostgreSQL via Prisma ORM 7
+- Database: PostgreSQL
+- ORM: Prisma ORM 7
 - Architecture: NPM workspaces monorepo
 
 ## Completed
 
-- Created monorepo structure:
+### Project Setup
+
+- สร้าง monorepo structure:
   - `apps/frontend`
   - `apps/backend`
   - `docs`
-- Added root workspace scripts for dev/build/lint.
-- Added Docker Compose for PostgreSQL.
-- Added `.env.example`.
-- Built frontend Login page:
-  - Ant Design form loaded through a dynamic client chunk so the form appears after AntD is ready
-  - Email/password validation
-  - Demo credential prefill
-  - Uses NextAuth Credentials provider
-  - Calls backend `/auth/login` from the NextAuth authorize callback
-  - Stores auth state in NextAuth JWT session cookies instead of `localStorage`
-- Built frontend Register page:
-  - Ant Design form loaded through a dynamic client chunk
-  - Calls backend `/auth/register`
-  - Signs in through NextAuth after successful registration
-  - Links between Login and Register pages
-  - Scoped AntD React 19 patch to client chunks that import AntD
-  - Replaced login background with a generated formal corporate ERP image stored locally
-  - Added inline critical CSS to reduce first-reload FOUC in development
-  - Replaced initial page-ready gate with an SSR overlay to avoid hydration mismatches
-- Built frontend Main Menu page:
-  - ERP sidebar layout
-  - User/profile area
-  - Logout action
-  - Protected by NextAuth proxy
-  - ERP module tiles
-  - Loads menu from backend `/menu` with fallback data
-  - Sends NextAuth access token to backend so menus can be filtered by department permissions
-  - Supports parent menus with submenu cards
-- Built master data placeholder pages:
-  - `/master/customers`
-  - `/master/products`
-- Built user menu permission settings page:
-  - `/settings/user-menu-permissions`
-  - Create departments
-  - Assign users to departments
-  - Set which main menus each department can view
-  - Uses Axios API client and Zustand store with shared admin types
-- Built backend base:
-  - NestJS bootstrap
-  - CORS for frontend
-  - Global validation pipe
-  - Config module
-  - Prisma ORM 7 setup
-  - PostgreSQL connection via `DATABASE_URL`
-  - Auth module with demo login
-  - Register endpoint with Prisma user creation and bcrypt password hashing
-  - Menu module with ERP menu list
-  - Department table and department-menu permission model
-  - `/menu` filters visible menu items by the logged-in user's department
-  - Admin APIs for departments, users, and department menu permissions
-  - `erp_menus` supports parent/child menu hierarchy and optional paths
+- เพิ่ม root workspace scripts สำหรับ dev/build/lint
+- เพิ่ม Prisma config สำหรับ PostgreSQL ผ่าน `DATABASE_URL`
+- เพิ่ม Prisma generated client ใน backend
+- เพิ่ม migration สำหรับเมนู, submenu, permission, ลูกค้า และสินค้า
 
-## Demo Account
+### Authentication
 
-- Email: `admin@erp.local`
-- Password: `admin123`
+- สร้างหน้า Login ด้วย Ant Design
+- สร้างหน้า Register ด้วย Ant Design
+- ใช้ NextAuth Credentials provider
+- Login เรียก backend `/auth/login`
+- Register เรียก backend `/auth/register`
+- เก็บ session ด้วย NextAuth JWT session
+- ส่ง backend access token ไปกับ API ที่ต้องใช้สิทธิ์
+- ป้องกัน route:
+  - `/main-menu`
+  - `/master`
+  - `/settings`
+- Backend auth ใช้ bcrypt และ JWT guard
 
-## Next Tasks
+### Menu And Permission
 
-- Add real User records and PostgreSQL-backed authentication.
-- Add password hashing and user seed script.
-- Add JWT guard for protected backend endpoints.
-- Add frontend route guard for pages that need login.
-- Add persistent NextAuth database sessions after real users are stored in PostgreSQL.
-- Add ERP module pages:
-  - Sales
-  - Inventory
-  - Purchase
-  - Accounting
-  - HR
-  - Reports
-- Add role and permission management.
-- Add department management screens and menu permission assignment UI.
-- Add and run Prisma migrations for the initial schema.
+- สร้างตาราง department
+- สร้างตารางเมนูหลัก `erp_menus`
+- สร้างตาราง submenu `erp_sub_menus`
+- สร้างตารางสิทธิ์เมนูหลัก `department_menu_permissions`
+- สร้างตารางสิทธิ์ submenu `department_sub_menu_permissions`
+- สร้าง API สำหรับ admin:
+  - `GET /admin/users`
+  - `PATCH /admin/users/:id/department`
+  - `GET /admin/departments`
+  - `POST /admin/departments`
+  - `GET /admin/menu-permissions`
+  - `PUT /admin/menu-permissions/:departmentId`
+- สร้างหน้า `/settings/user-menu-permissions`
+  - เพิ่มแผนก
+  - assign user เข้าแผนก
+  - เลือกสิทธิ์เมนูหลักและ submenu แบบ tree
+  - ใช้ Axios และ Zustand store
+- `/menu` แสดงเฉพาะเมนูที่ department ของ user ถูกตั้งสิทธิ์ไว้
+- `super_admin` ไม่ bypass menu permission แล้ว เห็นเฉพาะเมนูที่ set ให้ department ตัวเอง
+- Frontend จะ fetch `/menu` เฉพาะตอน NextAuth session authenticated และมี access token แล้ว
+- Backend `/menu` ถ้าไม่มี token/user จะตอบ `[]` ไม่ส่งเมนูทั้งหมด
+
+### Main Menu
+
+- สร้างหน้า `/main-menu`
+- แสดงเฉพาะเมนูหลักที่ user มีสิทธิ์
+- เอา sidebar ออก
+- ย้ายปุ่ม `ตั้งสิทธิ์` ไป navbar
+- ปุ่ม `ตั้งสิทธิ์` แสดงเฉพาะ `super_admin`
+- เมนู `ข้อมูลหลัก` กดเข้า `/master`
+
+### Master Data Menu
+
+- สร้างหน้า `/master`
+- แสดง submenu ที่ user มีสิทธิ์เท่านั้น
+- แสดง submenu ของ `ข้อมูลหลัก` เป็น sidebar ในหน้า `/master` และหน้าลูกทั้งหมด
+- เพิ่ม submenu:
+  - `ลูกค้า` -> `/master/customers`
+  - `สินค้า` -> `/master/products`
+
+### Customer CRUD
+
+- เพิ่ม Prisma model `Customer`
+- เพิ่ม table `customers`
+- Fields:
+  - `code`
+  - `name`
+  - `email`
+  - `phone`
+  - `address`
+  - `isActive`
+- เพิ่ม backend API:
+  - `GET /master/customers`
+  - `POST /master/customers`
+  - `PATCH /master/customers/:id`
+  - `DELETE /master/customers/:id`
+- สร้างหน้า `/master/customers`
+  - แสดงตารางลูกค้า
+  - สร้างลูกค้า
+  - แก้ไขลูกค้า
+  - ลบลูกค้า
+
+### Product CRUD
+
+- เพิ่ม Prisma model `Product`
+- เพิ่ม table `products`
+- Fields:
+  - `sku`
+  - `name`
+  - `description`
+  - `unit`
+  - `price`
+  - `stock`
+  - `isActive`
+- เพิ่ม backend API:
+  - `GET /master/products`
+  - `POST /master/products`
+  - `PATCH /master/products/:id`
+  - `DELETE /master/products/:id`
+- สร้างหน้า `/master/products`
+  - แสดงตารางสินค้า
+  - สร้างสินค้า
+  - แก้ไขสินค้า
+  - ลบสินค้า
+
+## Important Commands
+
+```bash
+npm install
+npm run dev
+npm run build
+npm run prisma:migrate -w apps/backend
+npm run prisma:generate -w apps/backend
+```
+
+## Current Database Migrations
+
+- `202604270001_add_erp_sub_menus`
+  - สร้าง `erp_sub_menus`
+  - สร้าง `department_sub_menu_permissions`
+- `202604270002_add_customers_products`
+  - สร้าง `customers`
+  - สร้าง `products`
 
 ## Notes
 
-- Backend now uses Prisma Client generated from `apps/backend/prisma/schema.prisma`.
-- Prisma reads PostgreSQL connection from `apps/backend/.env` through `DATABASE_URL`.
-- Current login still supports demo credentials so the UI/backend flow can be tested quickly.
-- Frontend also accepts the demo login when the backend is not running yet.
-- Ant Design uses `@ant-design/v5-patch-for-react-19` because the project runs on React 19 through Next 16.
-- Run `npm run prisma:migrate -w apps/backend` to create/update database tables.
+- หลัง migrate ต้อง restart backend
+- ก่อน user จะเห็นเมนู ต้อง assign department ให้ user และตั้งสิทธิ์เมนูให้ department นั้นก่อน
+- `super_admin` ยังเข้า setting permission ได้ แต่เมนูใช้งานจริงยังยึดตาม department permission
+- Ant Design ใช้ `@ant-design/v5-patch-for-react-19` เพราะโปรเจ็คใช้ React 19 ผ่าน Next 16
+
+## Next Tasks
+
+- เพิ่ม permission guard ราย endpoint สำหรับ customer/product ตาม submenu permission
+- เพิ่ม search/filter ในหน้าลูกค้าและสินค้า
+- เพิ่ม soft delete หรือ audit log แทนการ delete จริง
+- เพิ่ม pagination ฝั่ง backend
+- เพิ่ม seed script สำหรับเมนูเริ่มต้นและ admin user
+- เพิ่ม validation duplicate error message ให้ frontend อ่านง่าย
+- เพิ่ม unit/e2e tests สำหรับ auth, menu permission, customer และ product

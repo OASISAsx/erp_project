@@ -54,7 +54,11 @@ export const ModelName = {
   User: 'User',
   Department: 'Department',
   ErpMenu: 'ErpMenu',
-  DepartmentMenuPermission: 'DepartmentMenuPermission'
+  ErpSubMenu: 'ErpSubMenu',
+  DepartmentMenuPermission: 'DepartmentMenuPermission',
+  DepartmentSubMenuPermission: 'DepartmentSubMenuPermission',
+  Customer: 'Customer',
+  Product: 'Product'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -106,8 +110,6 @@ export const ErpMenuScalarFieldEnum = {
   key: 'key',
   label: 'label',
   description: 'description',
-  path: 'path',
-  parentId: 'parentId',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -115,6 +117,22 @@ export const ErpMenuScalarFieldEnum = {
 } as const
 
 export type ErpMenuScalarFieldEnum = (typeof ErpMenuScalarFieldEnum)[keyof typeof ErpMenuScalarFieldEnum]
+
+
+export const ErpSubMenuScalarFieldEnum = {
+  id: 'id',
+  menuId: 'menuId',
+  key: 'key',
+  label: 'label',
+  description: 'description',
+  path: 'path',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ErpSubMenuScalarFieldEnum = (typeof ErpSubMenuScalarFieldEnum)[keyof typeof ErpSubMenuScalarFieldEnum]
 
 
 export const DepartmentMenuPermissionScalarFieldEnum = {
@@ -127,6 +145,49 @@ export const DepartmentMenuPermissionScalarFieldEnum = {
 } as const
 
 export type DepartmentMenuPermissionScalarFieldEnum = (typeof DepartmentMenuPermissionScalarFieldEnum)[keyof typeof DepartmentMenuPermissionScalarFieldEnum]
+
+
+export const DepartmentSubMenuPermissionScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  subMenuId: 'subMenuId',
+  canView: 'canView',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentSubMenuPermissionScalarFieldEnum = (typeof DepartmentSubMenuPermissionScalarFieldEnum)[keyof typeof DepartmentSubMenuPermissionScalarFieldEnum]
+
+
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const ProductScalarFieldEnum = {
+  id: 'id',
+  sku: 'sku',
+  name: 'name',
+  description: 'description',
+  unit: 'unit',
+  price: 'price',
+  stock: 'stock',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -8,10 +8,9 @@ import {
   LogoutOutlined,
   SafetyCertificateOutlined,
   ShoppingCartOutlined,
-  TagsOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Layout, Menu, Typography } from "antd";
+import { Avatar, Button, Empty, Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -25,51 +24,31 @@ type MenuItem = {
   children?: MenuItem[];
 };
 
-const fallbackMenu: MenuItem[] = [
-  {
-    key: "master",
-    label: "ข้อมูลหลัก",
-    description: "ข้อมูลหลัก",
-    children: [
-      {
-        key: "master.customers",
-        label: "ลูกค้า",
-        description: "สร้างและจัดการข้อมูลลูกค้า",
-        path: "/master/customers"
-      },
-      {
-        key: "master.products",
-        label: "สินค้า",
-        description: "สร้างและจัดการข้อมูลสินค้า",
-        path: "/master/products"
-      }
-    ]
-  }
-];
-
 const iconByKey: Record<string, React.ReactNode> = {
-  master: <DatabaseOutlined />,
-  "master.customers": <UserOutlined />,
-  "master.products": <TagsOutlined />
+  master: <DatabaseOutlined />
 };
 
 export default function MainMenuPage() {
   const router = useRouter();
-  const [modules, setModules] = useState<MenuItem[]>(fallbackMenu);
-  const { data: session } = useSession();
+  const [modules, setModules] = useState<MenuItem[]>([]);
+  const { data: session, status } = useSession();
   const isSuperAdmin = session?.user?.role === "super_admin";
 
   useEffect(() => {
+    if (status !== "authenticated" || !session?.accessToken) {
+      setModules([]);
+      return;
+    }
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-    const token = session?.accessToken;
 
     fetch(`${apiUrl}/menu`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined
+      headers: { Authorization: `Bearer ${session.accessToken}` }
     })
-      .then((response) => (response.ok ? response.json() : fallbackMenu))
-      .then((data) => setModules(data))
-      .catch(() => setModules(fallbackMenu));
-  }, [session?.accessToken]);
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: MenuItem[]) => setModules(data))
+      .catch(() => setModules([]));
+  }, [session?.accessToken, status]);
 
   const navItems: MenuProps["items"] = [
     { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
@@ -79,8 +58,10 @@ export default function MainMenuPage() {
   ];
 
   const openMenu = (item: MenuItem) => {
-    if (item.path) {
-      router.push(item.path);
+    const path = item.path ?? (item.key === "master" ? "/master" : null);
+
+    if (path) {
+      router.push(path);
     }
   };
 
@@ -111,34 +92,25 @@ export default function MainMenuPage() {
       <div className={styles.pageHeader}>
         <div>
           <Typography.Title level={3}>เมนูหลัก ERP</Typography.Title>
-          <Typography.Text type="secondary">เลือกเมนูหลักและเมนูย่อยเพื่อเริ่มทำงาน</Typography.Text>
+          <Typography.Text type="secondary">เลือกโมดูลหลักเพื่อเริ่มทำงาน</Typography.Text>
         </div>
       </div>
 
       <Layout.Content className={styles.content}>
-        <div className={styles.moduleGrid}>
-          {modules.map((item) => (
-            <section className={styles.moduleTile} key={item.key}>
-              <span className={styles.moduleIcon}>{iconByKey[item.key] ?? <AppstoreOutlined />}</span>
-              <span className={styles.moduleLabel}>{item.label}</span>
-              <span className={styles.moduleDescription}>{item.description}</span>
-
-              {item.children?.length ? (
-                <div className={styles.subMenuList}>
-                  {item.children.map((child) => (
-                    <button className={styles.subMenuButton} key={child.key} type="button" onClick={() => openMenu(child)}>
-                      <span className={styles.subMenuIcon}>{iconByKey[child.key] ?? <ShoppingCartOutlined />}</span>
-                      <span>
-                        <strong>{child.label}</strong>
-                        <small>{child.description}</small>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </section>
-          ))}
-        </div>
+        {modules.length ? (
+          <div className={styles.moduleGrid}>
+            {modules.map((item) => (
+              <button className={styles.moduleTile} key={item.key} type="button" onClick={() => openMenu(item)}>
+                <span className={styles.moduleIcon}>{iconByKey[item.key] ?? <ShoppingCartOutlined />}</span>
+                <span className={styles.moduleLabel}>{item.label}</span>
+                <span className={styles.moduleDescription}>{item.description}</span>
+                {item.children?.length ? <span className={styles.moduleMeta}>{item.children.length} เมนูย่อย</span> : null}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <Empty description="ยังไม่มีเมนูที่เปิดสิทธิ์ให้ใช้งาน" />
+        )}
       </Layout.Content>
     </Layout>
   );
