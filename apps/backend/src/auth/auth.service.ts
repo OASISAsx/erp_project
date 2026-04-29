@@ -16,7 +16,7 @@ export class AuthService {
       email: dto.email.trim().toLowerCase(),
       password: dto.password
     };
-    const databaseUser = await this.findDatabaseUser(credentials).catch(() => null);
+    const databaseUser = await this.findDatabaseUser(credentials);
 
     if (databaseUser) {
       return this.createLoginResponse(databaseUser);

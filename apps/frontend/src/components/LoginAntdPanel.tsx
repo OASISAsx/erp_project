@@ -5,6 +5,7 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography, message } from "antd";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useState } from "react";
 import styles from "@/app/login/page.module.scss";
 
 type LoginForm = {
@@ -14,12 +15,28 @@ type LoginForm = {
 
 export default function LoginAntdPanel() {
   const [messageApi, contextHolder] = message.useMessage();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: LoginForm) => {
-    await signIn("credentials", {
-      ...values,
-      redirectTo: "/main-menu"
-    });
+    setLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        ...values,
+        redirect: false
+      });
+
+      if (result?.error) {
+        messageApi.error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+        return;
+      }
+
+      window.location.href = "/dashboard";
+    } catch {
+      messageApi.error("เข้าสู่ระบบไม่สำเร็จ");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,15 +62,11 @@ export default function LoginAntdPanel() {
           <Input prefix={<MailOutlined />} size="large" placeholder="admin@erp.local" />
         </Form.Item>
 
-        <Form.Item
-          label="รหัสผ่าน"
-          name="password"
-          rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน" }]}
-        >
+        <Form.Item label="รหัสผ่าน" name="password" rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน" }]}>
           <Input.Password prefix={<LockOutlined />} size="large" placeholder="admin123" />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" size="large" block>
+        <Button type="primary" htmlType="submit" size="large" block loading={loading}>
           เข้าสู่ระบบ
         </Button>
       </Form>

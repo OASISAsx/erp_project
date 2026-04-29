@@ -58,7 +58,11 @@ export const ModelName = {
   DepartmentMenuPermission: 'DepartmentMenuPermission',
   DepartmentSubMenuPermission: 'DepartmentSubMenuPermission',
   Customer: 'Customer',
-  Product: 'Product'
+  Product: 'Product',
+  DocumentCounter: 'DocumentCounter',
+  PurchaseOrder: 'PurchaseOrder',
+  PurchaseOrderItem: 'PurchaseOrderItem',
+  ProductSerial: 'ProductSerial'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -188,6 +192,62 @@ export const ProductScalarFieldEnum = {
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const DocumentCounterScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  lastNumber: 'lastNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentCounterScalarFieldEnum = (typeof DocumentCounterScalarFieldEnum)[keyof typeof DocumentCounterScalarFieldEnum]
+
+
+export const PurchaseOrderScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  customerId: 'customerId',
+  status: 'status',
+  orderDate: 'orderDate',
+  note: 'note',
+  subtotal: 'subtotal',
+  total: 'total',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PurchaseOrderScalarFieldEnum = (typeof PurchaseOrderScalarFieldEnum)[keyof typeof PurchaseOrderScalarFieldEnum]
+
+
+export const PurchaseOrderItemScalarFieldEnum = {
+  id: 'id',
+  purchaseOrderId: 'purchaseOrderId',
+  productId: 'productId',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PurchaseOrderItemScalarFieldEnum = (typeof PurchaseOrderItemScalarFieldEnum)[keyof typeof PurchaseOrderItemScalarFieldEnum]
+
+
+export const ProductSerialScalarFieldEnum = {
+  id: 'id',
+  serialNumber: 'serialNumber',
+  productId: 'productId',
+  purchaseOrderId: 'purchaseOrderId',
+  purchaseOrderItemId: 'purchaseOrderItemId',
+  warehouseLocation: 'warehouseLocation',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductSerialScalarFieldEnum = (typeof ProductSerialScalarFieldEnum)[keyof typeof ProductSerialScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -3,7 +3,15 @@
 import "@ant-design/v5-patch-for-react-19";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { AppstoreOutlined, LogoutOutlined, TagsOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  AppstoreOutlined,
+  FileTextOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  QrcodeOutlined,
+  TagsOutlined,
+  UserOutlined
+} from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { signOut, useSession } from "next-auth/react";
@@ -25,7 +33,15 @@ type MasterSectionShellProps = {
 
 const iconByKey: Record<string, ReactNode> = {
   "master.customers": <UserOutlined />,
-  "master.products": <TagsOutlined />
+  "master.products": <TagsOutlined />,
+  "purchase.orders": <FileTextOutlined />,
+  "warehouse.receiving": <QrcodeOutlined />
+};
+
+const mainMenuFallbackLabels: Record<string, string> = {
+  master: "ข้อมูลหลัก",
+  purchase: "ใบสั่งซื้อ",
+  warehouse: "คลังสินค้า"
 };
 
 export function MasterSectionShell({ children, mainMenuKey = "master" }: MasterSectionShellProps) {
@@ -67,6 +83,9 @@ export function MasterSectionShell({ children, mainMenuKey = "master" }: MasterS
     <Layout className={styles.shell}>
       <Layout.Header className={styles.navbar}>
         <div className={styles.brand}>ERP</div>
+        <Button icon={<HomeOutlined />} onClick={() => router.push("/dashboard")}>
+          แดชบอร์ด
+        </Button>
         <Button icon={<AppstoreOutlined />} onClick={() => router.push("/main-menu")}>
           เมนูหลัก
         </Button>
@@ -82,7 +101,7 @@ export function MasterSectionShell({ children, mainMenuKey = "master" }: MasterS
       <Layout className={styles.body}>
         <Layout.Sider className={styles.sidebar} width={240} breakpoint="lg" collapsedWidth={0}>
           <div className={styles.sidebarTitle}>
-            <Typography.Text strong>{mainMenu?.label ?? "ข้อมูลหลัก"}</Typography.Text>
+            <Typography.Text strong>{mainMenu?.label ?? mainMenuFallbackLabels[mainMenuKey] ?? "ERP"}</Typography.Text>
             <Typography.Text type="secondary">{subMenus.length} เมนูย่อย</Typography.Text>
           </div>
           <Menu

@@ -2,7 +2,7 @@
 
 import "@ant-design/v5-patch-for-react-19";
 import { useEffect } from "react";
-import { AppstoreOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Alert,
   Avatar,
@@ -156,6 +156,9 @@ export default function UserMenuPermissionsPage() {
       {contextHolder}
       <Layout.Header className={styles.navbar}>
         <div className={styles.brand}>ERP</div>
+        <Button icon={<HomeOutlined />} onClick={() => router.push("/dashboard")}>
+          แดชบอร์ด
+        </Button>
         <Button icon={<AppstoreOutlined />} onClick={() => router.push("/main-menu")}>
           เมนูหลัก
         </Button>

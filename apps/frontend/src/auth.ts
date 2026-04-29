@@ -22,10 +22,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const email = String(credentials?.email ?? "");
+        const email = String(credentials?.email ?? "").trim().toLowerCase();
         const password = String(credentials?.password ?? "");
 
-        if (!email || password.length < 6) {
+        if (!email || !password) {
           return null;
         }
 

@@ -28,6 +28,7 @@ npm run prisma:generate -w apps/backend
 ## Current Features
 
 - Login/Register ผ่าน NextAuth Credentials และ backend NestJS
+- Dashboard หลังเข้าสู่ระบบ พร้อมรูปโปรโมท, ปฏิทิน และ mockup อากาศวันนี้
 - Menu permission ตาม department
 - Main menu แสดงเฉพาะเมนูที่ตั้งสิทธิ์ไว้
 - `ข้อมูลหลัก` มี submenu:
@@ -36,6 +37,12 @@ npm run prisma:generate -w apps/backend
 - หน้าในกลุ่ม `ข้อมูลหลัก` แสดง submenu เป็น sidebar
 - CRUD ลูกค้า
 - CRUD สินค้า
+- ใบสั่งซื้อพร้อม Running Number
+- เลือกลูกค้าและสินค้าในใบสั่งซื้อ
+- รับ Serial Number ของสินค้าเข้าคลังและเพิ่ม stock
+- ดูภาพรวมใบสั่งซื้อและพิมพ์/PDF ผ่าน browser print
+
+- เมนูคลังสินค้า `/warehouse/receiving` สำหรับเลือกใบงานจาก PO และสแกน SN แยกตามสินค้า
 
 ## Demo Login
 

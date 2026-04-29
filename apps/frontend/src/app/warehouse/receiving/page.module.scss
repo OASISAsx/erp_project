@@ -1,0 +1,149 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(520px, 1.4fr);
+  gap: 18px;
+}
+
+.panelTitle {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.orderButton {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  color: #0f2633;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.orderButton span {
+  color: #1677ff;
+  font-weight: 800;
+}
+
+.orderButton small {
+  color: #697985;
+}
+
+.selectedRow td {
+  background: #eef6ff !important;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid #e6edf4;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f8fbff 0%, #f4faf7 100%);
+}
+
+.detailHeader h4 {
+  margin: 4px 0;
+}
+
+.progressBox {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.progressBox div:last-child {
+  display: grid;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.progressBox strong {
+  color: #0f2633;
+  font-size: 18px;
+}
+
+.progressBox span,
+.productCell span,
+.scanSummary span {
+  color: #697985;
+}
+
+.productCell {
+  display: grid;
+  gap: 3px;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  color: #7a8792;
+}
+
+.emptyState svg {
+  margin-bottom: 10px;
+  color: #1677ff;
+  font-size: 38px;
+}
+
+.scanSummary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid #d7eadf;
+  border-radius: 8px;
+  background: #f6fbf7;
+}
+
+.scanSummary svg {
+  color: #1f9d55;
+  font-size: 22px;
+}
+
+.scanSummary div {
+  display: grid;
+  gap: 4px;
+}
+
+.scanPreviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 10px;
+}
+
+.scanWarning {
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .header,
+  .detailHeader,
+  .progressBox {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

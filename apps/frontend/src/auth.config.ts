@@ -13,16 +13,19 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = Boolean(auth?.user);
       const isProtectedRoute =
+        nextUrl.pathname.startsWith("/dashboard") ||
         nextUrl.pathname.startsWith("/main-menu") ||
         nextUrl.pathname.startsWith("/settings") ||
-        nextUrl.pathname.startsWith("/master");
+        nextUrl.pathname.startsWith("/master") ||
+        nextUrl.pathname.startsWith("/purchase") ||
+        nextUrl.pathname.startsWith("/warehouse");
 
       if (isProtectedRoute) {
         return isLoggedIn;
       }
 
       if (isLoggedIn && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
-        return Response.redirect(new URL("/main-menu", nextUrl));
+        return Response.redirect(new URL("/dashboard", nextUrl));
       }
 
       return true;

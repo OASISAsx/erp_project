@@ -83,6 +83,10 @@ export class MenuService {
       return "/master";
     }
 
+    if (key === "purchase") {
+      return "/purchase";
+    }
+
     return null;
   }
 }

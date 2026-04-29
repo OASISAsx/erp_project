@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import {
   AppstoreOutlined,
   DatabaseOutlined,
+  FileTextOutlined,
+  HomeOutlined,
+  InboxOutlined,
   LogoutOutlined,
   SafetyCertificateOutlined,
   ShoppingCartOutlined,
@@ -25,7 +28,9 @@ type MenuItem = {
 };
 
 const iconByKey: Record<string, React.ReactNode> = {
-  master: <DatabaseOutlined />
+  master: <DatabaseOutlined />,
+  purchase: <FileTextOutlined />,
+  warehouse: <InboxOutlined />
 };
 
 export default function MainMenuPage() {
@@ -51,14 +56,18 @@ export default function MainMenuPage() {
   }, [session?.accessToken, status]);
 
   const navItems: MenuProps["items"] = [
-    { key: "dashboard", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
+    { key: "dashboard", icon: <HomeOutlined />, label: "แดชบอร์ด" },
+    { key: "main-menu", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
     ...(isSuperAdmin
       ? [{ key: "permissions", icon: <SafetyCertificateOutlined />, label: "ตั้งสิทธิ์" }]
       : [])
   ];
 
   const openMenu = (item: MenuItem) => {
-    const path = item.path ?? (item.key === "master" ? "/master" : null);
+    const path =
+      item.path ??
+      item.children?.find((child) => child.path)?.path ??
+      (item.key === "master" ? "/master" : item.key === "purchase" ? "/purchase" : item.key === "warehouse" ? "/warehouse" : null);
 
     if (path) {
       router.push(path);
@@ -72,8 +81,12 @@ export default function MainMenuPage() {
         <Menu
           className={styles.navMenu}
           mode="horizontal"
-          selectedKeys={["dashboard"]}
+          selectedKeys={["main-menu"]}
           onClick={({ key }) => {
+            if (key === "dashboard") {
+              router.push("/dashboard");
+            }
+
             if (key === "permissions") {
               router.push("/settings/user-menu-permissions");
             }

@@ -29,6 +29,36 @@ const defaultMenus = [
         sortOrder: 20
       }
     ]
+  },
+  {
+    key: "purchase",
+    label: "ใบสั่งซื้อ",
+    description: "จัดการใบสั่งซื้อและรับ Serial Number เข้าคลัง",
+    sortOrder: 20,
+    subMenus: [
+      {
+        key: "purchase.orders",
+        label: "ใบสั่งซื้อ",
+        description: "สร้างใบสั่งซื้อ เลือกลูกค้าและสินค้า พร้อมรับ SN เข้าคลัง",
+        path: "/purchase/orders",
+        sortOrder: 10
+      }
+    ]
+  },
+  {
+    key: "warehouse",
+    label: "คลังสินค้า",
+    description: "รับสินค้าเข้าคลังจากใบสั่งซื้อและสแกน Serial Number",
+    sortOrder: 30,
+    subMenus: [
+      {
+        key: "warehouse.receiving",
+        label: "รับสินค้าเข้า",
+        description: "เลือกใบงานจาก PO เพื่อสแกน Serial Number ของสินค้าเข้าคลัง",
+        path: "/warehouse/receiving",
+        sortOrder: 10
+      }
+    ]
   }
 ];
 

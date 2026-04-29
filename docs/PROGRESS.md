@@ -65,6 +65,13 @@
 
 ### Main Menu
 
+- สร้างหน้า `/dashboard`
+  - เป็นหน้าแรกหลัง login
+  - มีรูปโปรโมทจาก asset ในโปรเจ็ค
+  - มี quick links ไปเมนูหลัก, ลูกค้า และสินค้า
+  - มีปฏิทิน mockup รายเดือน
+  - มี mockup อากาศวันนี้
+- ปรับ Login/Register redirect ไป `/dashboard`
 - สร้างหน้า `/main-menu`
 - แสดงเฉพาะเมนูหลักที่ user มีสิทธิ์
 - เอา sidebar ออก
@@ -126,6 +133,41 @@
   - แก้ไขสินค้า
   - ลบสินค้า
 
+### Purchase Order
+
+- เพิ่มเมนูหลัก `ใบสั่งซื้อ`
+- เพิ่ม submenu `ใบสั่งซื้อ` -> `/purchase/orders`
+- เพิ่ม Prisma models:
+  - `DocumentCounter` สำหรับ Running Number
+  - `PurchaseOrder`
+  - `PurchaseOrderItem`
+  - `ProductSerial`
+- เพิ่ม migration `202604290001_add_purchase_orders`
+- Running Number รูปแบบ `PO-YYYYMM-0001`
+- เพิ่ม backend API:
+  - `GET /purchase-orders`
+  - `GET /purchase-orders/:id`
+  - `POST /purchase-orders`
+  - `POST /purchase-orders/:id/serials`
+- สร้างหน้า `/purchase/orders`
+  - เลือกลูกค้า
+  - เลือกสินค้า
+  - ระบุจำนวนและราคา
+  - สร้างใบสั่งซื้อ
+  - ดูภาพรวมใบสั่งซื้อ
+  - พิมพ์/PDF ผ่าน browser print
+  - ยิง Serial Number ของแต่ละสินค้าเข้าคลัง
+  - เพิ่ม stock สินค้าตามจำนวน Serial Number ที่รับเข้า
+
+### Warehouse Receiving
+
+- เพิ่มเมนูหลัก `คลังสินค้า`
+- เพิ่ม submenu `รับสินค้าเข้า` -> `/warehouse/receiving`
+- หน้า warehouse จะดึงใบงานจาก PO ที่สร้างไว้
+- คนคลังเลือกใบงาน แล้วเห็นสินค้าแต่ละตัว จำนวน PO, รับแล้ว, ค้างรับ และ SN ล่าสุด
+- สแกนหรือกรอก SN แยกตามสินค้า แล้วบันทึกผ่าน API `POST /purchase-orders/:id/serials`
+- ระบบเดิมจะตรวจ duplicate SN, อัปเดตสถานะ PO และเพิ่ม stock ตามจำนวน SN ที่รับเข้า
+
 ## Important Commands
 
 ```bash
@@ -144,6 +186,11 @@ npm run prisma:generate -w apps/backend
 - `202604270002_add_customers_products`
   - สร้าง `customers`
   - สร้าง `products`
+- `202604290001_add_purchase_orders`
+  - สร้าง `document_counters`
+  - สร้าง `purchase_orders`
+  - สร้าง `purchase_order_items`
+  - สร้าง `product_serials`
 
 ## Notes
 
@@ -155,7 +202,9 @@ npm run prisma:generate -w apps/backend
 ## Next Tasks
 
 - เพิ่ม permission guard ราย endpoint สำหรับ customer/product ตาม submenu permission
+- เพิ่ม permission guard ราย endpoint สำหรับ purchase order และ stock serial
 - เพิ่ม search/filter ในหน้าลูกค้าและสินค้า
+- เพิ่ม search/filter ในหน้าใบสั่งซื้อ
 - เพิ่ม soft delete หรือ audit log แทนการ delete จริง
 - เพิ่ม pagination ฝั่ง backend
 - เพิ่ม seed script สำหรับเมนูเริ่มต้นและ admin user

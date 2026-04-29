@@ -1,0 +1,326 @@
+.shell {
+  min-height: 100vh;
+  background: #f4f7fa;
+}
+
+.navbar {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #e7ebf0;
+}
+
+.brand {
+  color: #0f2633;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.navActions {
+  display: flex;
+  gap: 10px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.content {
+  display: grid;
+  gap: 20px;
+  padding: 32px;
+}
+
+.hero {
+  min-height: 260px;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(11, 35, 49, 0.88), rgba(11, 35, 49, 0.44)),
+    url("/images/login-official-bg.png");
+  background-position: center;
+  background-size: cover;
+  color: #ffffff;
+}
+
+.heroContent {
+  max-width: 720px;
+  padding: 32px;
+
+  h2 {
+    margin: 0 0 10px;
+    color: #ffffff;
+  }
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.metaPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(320px, 420px);
+  gap: 20px;
+}
+
+.panel {
+  padding: 22px;
+  border: 1px solid #e2e8ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+
+  h4 {
+    margin: 0 0 4px;
+  }
+}
+
+.minimalCalendar {
+  padding-top: 4px;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendarWeekday {
+  min-height: 28px;
+  display: grid;
+  place-items: center;
+  color: #8a97a5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendarDay {
+  position: relative;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  color: #243544;
+  background: transparent;
+  font-weight: 600;
+
+  span {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  i {
+    position: absolute;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #2f8a61;
+  }
+}
+
+.calendarMuted {
+  color: #c2cad2;
+}
+
+.calendarToday {
+  color: #1677ff;
+
+  span {
+    color: #ffffff;
+    background: #1677ff;
+    box-shadow: 0 8px 18px rgba(22, 119, 255, 0.22);
+  }
+
+  i {
+    background: #ffffff;
+  }
+}
+
+.calendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+  color: #667789;
+  font-size: 12px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 50%;
+    background: #2f8a61;
+  }
+}
+
+.todayLegend::before {
+  width: 14px;
+  height: 14px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1677ff;
+  content: "";
+}
+
+/* legacy selectors kept empty-safe for older markup during hot reload */
+.calendarMuted,
+.calendarToday {
+}
+
+/*
+.calendarDay {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e6edf4;
+  border-radius: 8px;
+  color: #14212b;
+  background: #ffffff;
+  font-weight: 600;
+}
+
+.calendarMuted {
+  color: #a4afba;
+  background: #f8fafc;
+}
+
+.calendarToday {
+  border-color: #1677ff;
+  color: #ffffff;
+  background: #1677ff;
+}
+*/
+
+.weather {
+  display: grid;
+  gap: 18px;
+}
+
+.weatherMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.temperature {
+  color: #143044;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.weatherIcon {
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #b56a00;
+  background: #fff3d6;
+  font-size: 42px;
+}
+
+.weatherStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f7faf8;
+
+  strong,
+  span {
+    display: block;
+  }
+
+  span {
+    margin-bottom: 4px;
+    color: #667789;
+    font-size: 12px;
+  }
+}
+
+.quickLinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.quickButton {
+  min-height: 74px;
+  justify-content: flex-start;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+    height: auto;
+    padding: 16px 20px;
+  }
+
+  .profile {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .grid,
+  .quickLinks {
+    grid-template-columns: 1fr;
+  }
+
+  .heroContent {
+    padding: 24px;
+  }
+}

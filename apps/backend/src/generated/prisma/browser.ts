@@ -57,3 +57,23 @@ export type Customer = Prisma.CustomerModel
  * 
  */
 export type Product = Prisma.ProductModel
+/**
+ * Model DocumentCounter
+ * 
+ */
+export type DocumentCounter = Prisma.DocumentCounterModel
+/**
+ * Model PurchaseOrder
+ * 
+ */
+export type PurchaseOrder = Prisma.PurchaseOrderModel
+/**
+ * Model PurchaseOrderItem
+ * 
+ */
+export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
+/**
+ * Model ProductSerial
+ * 
+ */
+export type ProductSerial = Prisma.ProductSerialModel
