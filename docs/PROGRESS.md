@@ -168,6 +168,14 @@
 - สแกนหรือกรอก SN แยกตามสินค้า แล้วบันทึกผ่าน API `POST /purchase-orders/:id/serials`
 - ระบบเดิมจะตรวจ duplicate SN, อัปเดตสถานะ PO และเพิ่ม stock ตามจำนวน SN ที่รับเข้า
 
+### Latest Warehouse Scan Update
+
+- SN receiving is handled only in warehouse, not in the purchase order page.
+- Purchase order page now focuses on create, preview, and browser print/PDF only.
+- Scan dialog uses a normal AntD Input: scan/type one SN and press Enter to push it into the preview DataTable.
+- Preview DataTable shows Serial Number, scanned user from session, warehouse location, and delete action before saving.
+- Save sends only the SN rows currently in the DataTable to `POST /purchase-orders/:id/serials`.
+
 ## Important Commands
 
 ```bash

@@ -44,6 +44,9 @@ npm run prisma:generate -w apps/backend
 
 - เมนูคลังสินค้า `/warehouse/receiving` สำหรับเลือกใบงานจาก PO และสแกน SN แยกตามสินค้า
 
+- Purchase Order page is for creating/viewing/printing PO only; SN receiving is handled by warehouse.
+- Warehouse scan dialog uses a normal AntD Input: scan/type SN, press Enter, preview rows in DataTable, then save to stock.
+
 ## Demo Login
 
 - Email: `admin@erp.local`
