@@ -15,37 +15,13 @@ import type { ColumnsType } from "antd/es/table";
 import { useSession } from "next-auth/react";
 import { MasterSectionShell } from "@/components/MasterSectionShell";
 import { apiClient, getAuthHeaders } from "@/lib/api";
+import type { ReceivingOrderItem, ReceivingPurchaseOrder, ScanTarget } from "@/types/warehouse";
 import shellStyles from "@/app/master/master.module.scss";
 import styles from "./page.module.scss";
 
-type Customer = { id: string; code: string; name: string };
-type Product = { id: string; sku: string; name: string; unit: string; stock: number };
-type Serial = { id: string; serialNumber: string; warehouseLocation?: string | null };
-type OrderItem = {
-  id: string;
-  quantity: number;
-  receivedQuantity: number;
-  remainingQuantity: number;
-  product: Product;
-  serials: Serial[];
-};
-type PurchaseOrder = {
-  id: string;
-  number: string;
-  status: string;
-  createdAt: string;
-  customer: Customer;
-  items: OrderItem[];
-};
-type ScanTarget = {
-  order: PurchaseOrder;
-  item: OrderItem;
-};
-
 const statusColor: Record<string, string> = {
-  draft: "blue",
-  partial_received: "gold",
-  received: "green"
+  waiting_picking: "gold",
+  closed: "green"
 };
 
 export default function WarehouseReceivingPage() {
@@ -54,7 +30,7 @@ export default function WarehouseReceivingPage() {
   const [scanForm] = Form.useForm();
   const warehouseLocationInput = Form.useWatch("warehouseLocation", scanForm);
   const authHeaders = useMemo(() => getAuthHeaders(session?.accessToken), [session?.accessToken]);
-  const [orders, setOrders] = useState<PurchaseOrder[]>([]);
+  const [orders, setOrders] = useState<ReceivingPurchaseOrder[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string>();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,9 +46,9 @@ export default function WarehouseReceivingPage() {
 
     setLoading(true);
     try {
-      const response = await apiClient.get<PurchaseOrder[]>("/purchase-orders", { headers: authHeaders });
+      const response = await apiClient.get<ReceivingPurchaseOrder[]>("/purchase-orders", { headers: authHeaders });
       setOrders(response.data);
-      setSelectedOrderId((current) => current ?? response.data.find((order) => order.status !== "received")?.id ?? response.data[0]?.id);
+      setSelectedOrderId((current) => current ?? response.data.find((order) => order.status !== "closed")?.id ?? response.data[0]?.id);
     } catch {
       messageApi.error("โหลดใบงานรับสินค้าไม่สำเร็จ");
     } finally {
@@ -129,7 +105,7 @@ export default function WarehouseReceivingPage() {
   );
   const isScanOverLimit = Boolean(scanTarget && scannedSerialRows.length > scanTarget.item.remainingQuantity);
 
-  const openScan = (order: PurchaseOrder, item: OrderItem) => {
+  const openScan = (order: ReceivingPurchaseOrder, item: ReceivingOrderItem) => {
     scanForm.setFieldsValue({ warehouseLocation: "WH-A1" });
     setSerialDraft("");
     setScannedSerials([]);
@@ -178,7 +154,7 @@ export default function WarehouseReceivingPage() {
 
     setSaving(true);
     try {
-      const response = await apiClient.post<PurchaseOrder>(
+      const response = await apiClient.post<ReceivingPurchaseOrder>(
         `/purchase-orders/${scanTarget.order.id}/serials`,
         {
           purchaseOrderItemId: scanTarget.item.id,
@@ -207,7 +183,7 @@ export default function WarehouseReceivingPage() {
     setScannedSerials([]);
   };
 
-  const orderColumns: ColumnsType<PurchaseOrder> = [
+  const orderColumns: ColumnsType<ReceivingPurchaseOrder> = [
     {
       title: "ใบงาน",
       render: (_, order) => (
@@ -221,11 +197,15 @@ export default function WarehouseReceivingPage() {
       title: "สถานะ",
       dataIndex: "status",
       width: 120,
-      render: (value) => <Tag color={statusColor[value] ?? "default"}>{value}</Tag>
+      render: (value, order) => (
+        <Tag color={order.mainStatus?.color ?? statusColor[value] ?? "default"}>
+          {order.mainStatus?.label ?? value}
+        </Tag>
+      )
     }
   ];
 
-  const itemColumns: ColumnsType<OrderItem> = [
+  const itemColumns: ColumnsType<ReceivingOrderItem> = [
     {
       title: "สินค้า",
       render: (_, item) => (

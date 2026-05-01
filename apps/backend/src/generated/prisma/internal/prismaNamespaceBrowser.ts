@@ -60,6 +60,7 @@ export const ModelName = {
   Customer: 'Customer',
   Product: 'Product',
   DocumentCounter: 'DocumentCounter',
+  MainStatus: 'MainStatus',
   PurchaseOrder: 'PurchaseOrder',
   PurchaseOrderItem: 'PurchaseOrderItem',
   ProductSerial: 'ProductSerial'
@@ -205,11 +206,28 @@ export const DocumentCounterScalarFieldEnum = {
 export type DocumentCounterScalarFieldEnum = (typeof DocumentCounterScalarFieldEnum)[keyof typeof DocumentCounterScalarFieldEnum]
 
 
+export const MainStatusScalarFieldEnum = {
+  id: 'id',
+  module: 'module',
+  code: 'code',
+  label: 'label',
+  description: 'description',
+  color: 'color',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MainStatusScalarFieldEnum = (typeof MainStatusScalarFieldEnum)[keyof typeof MainStatusScalarFieldEnum]
+
+
 export const PurchaseOrderScalarFieldEnum = {
   id: 'id',
   number: 'number',
   customerId: 'customerId',
   status: 'status',
+  mainStatusId: 'mainStatusId',
   orderDate: 'orderDate',
   note: 'note',
   subtotal: 'subtotal',

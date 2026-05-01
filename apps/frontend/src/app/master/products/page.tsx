@@ -2,7 +2,7 @@
 
 import { Tag } from "antd";
 import { MasterCrudPage } from "@/components/MasterCrudPage";
-import type { MasterField } from "@/components/MasterCrudPage";
+import type { MasterField } from "@/types/master";
 
 const fields: MasterField[] = [
   { name: "sku", label: "SKU", required: true, width: 140 },

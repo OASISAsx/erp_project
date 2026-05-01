@@ -11,7 +11,7 @@ import {
   LogoutOutlined,
   SafetyCertificateOutlined,
   ShoppingCartOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Empty, Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
@@ -30,7 +30,7 @@ type MenuItem = {
 const iconByKey: Record<string, React.ReactNode> = {
   master: <DatabaseOutlined />,
   purchase: <FileTextOutlined />,
-  warehouse: <InboxOutlined />
+  warehouse: <InboxOutlined />,
 };
 
 export default function MainMenuPage() {
@@ -48,7 +48,7 @@ export default function MainMenuPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
     fetch(`${apiUrl}/menu`, {
-      headers: { Authorization: `Bearer ${session.accessToken}` }
+      headers: { Authorization: `Bearer ${session.accessToken}` },
     })
       .then((response) => (response.ok ? response.json() : Promise.reject()))
       .then((data: MenuItem[]) => setModules(data))
@@ -59,15 +59,29 @@ export default function MainMenuPage() {
     { key: "dashboard", icon: <HomeOutlined />, label: "แดชบอร์ด" },
     { key: "main-menu", icon: <AppstoreOutlined />, label: "เมนูหลัก" },
     ...(isSuperAdmin
-      ? [{ key: "permissions", icon: <SafetyCertificateOutlined />, label: "ตั้งสิทธิ์" }]
-      : [])
+      ? [
+          {
+            key: "permissions",
+            icon: <SafetyCertificateOutlined />,
+            label: "ตั้งสิทธิ์",
+          },
+        ]
+      : []),
   ];
 
   const openMenu = (item: MenuItem) => {
     const path =
       item.path ??
       item.children?.find((child) => child.path)?.path ??
-      (item.key === "master" ? "/master" : item.key === "purchase" ? "/purchase" : item.key === "warehouse" ? "/warehouse" : null);
+      (item.key === "master"
+        ? "/master"
+        : item.key === "purchase"
+          ? "/purchase"
+          : item.key === "warehouse"
+            ? "/warehouse"
+            : item.key === "sales"
+              ? "/sales"
+              : null);
 
     if (path) {
       router.push(path);
@@ -96,7 +110,10 @@ export default function MainMenuPage() {
         <div className={styles.profile}>
           <Avatar icon={<UserOutlined />} />
           <span>{session?.user?.name ?? "Admin"}</span>
-          <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: "/login" })}>
+          <Button
+            icon={<LogoutOutlined />}
+            onClick={() => signOut({ callbackUrl: "/login" })}
+          >
             ออกจากระบบ
           </Button>
         </div>
@@ -105,7 +122,9 @@ export default function MainMenuPage() {
       <div className={styles.pageHeader}>
         <div>
           <Typography.Title level={3}>เมนูหลัก ERP</Typography.Title>
-          <Typography.Text type="secondary">เลือกโมดูลหลักเพื่อเริ่มทำงาน</Typography.Text>
+          <Typography.Text type="secondary">
+            เลือกโมดูลหลักเพื่อเริ่มทำงาน
+          </Typography.Text>
         </div>
       </div>
 
@@ -113,11 +132,24 @@ export default function MainMenuPage() {
         {modules.length ? (
           <div className={styles.moduleGrid}>
             {modules.map((item) => (
-              <button className={styles.moduleTile} key={item.key} type="button" onClick={() => openMenu(item)}>
-                <span className={styles.moduleIcon}>{iconByKey[item.key] ?? <ShoppingCartOutlined />}</span>
+              <button
+                className={styles.moduleTile}
+                key={item.key}
+                type="button"
+                onClick={() => openMenu(item)}
+              >
+                <span className={styles.moduleIcon}>
+                  {iconByKey[item.key] ?? <ShoppingCartOutlined />}
+                </span>
                 <span className={styles.moduleLabel}>{item.label}</span>
-                <span className={styles.moduleDescription}>{item.description}</span>
-                {item.children?.length ? <span className={styles.moduleMeta}>{item.children.length} เมนูย่อย</span> : null}
+                <span className={styles.moduleDescription}>
+                  {item.description}
+                </span>
+                {item.children?.length ? (
+                  <span className={styles.moduleMeta}>
+                    {item.children.length} เมนูย่อย
+                  </span>
+                ) : null}
               </button>
             ))}
           </div>

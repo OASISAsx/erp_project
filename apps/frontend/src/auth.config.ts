@@ -18,6 +18,7 @@ export const authConfig = {
         nextUrl.pathname.startsWith("/settings") ||
         nextUrl.pathname.startsWith("/master") ||
         nextUrl.pathname.startsWith("/purchase") ||
+        nextUrl.pathname.startsWith("/sales") ||
         nextUrl.pathname.startsWith("/warehouse");
 
       if (isProtectedRoute) {

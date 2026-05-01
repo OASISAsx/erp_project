@@ -1,15 +1,21 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { MainStatusesService } from "../main-statuses/main-statuses.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePurchaseOrderDto, ReceiveSerialsDto } from "./dto";
 
 @Injectable()
 export class PurchaseOrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mainStatusesService: MainStatusesService
+  ) {}
 
-  async findAll() {
+  async findAll(statusCodes?: string[]) {
     const orders = await this.prisma.purchaseOrder.findMany({
+      where: statusCodes?.length ? { status: { in: statusCodes } } : undefined,
       include: {
         customer: true,
+        mainStatus: true,
         items: {
           include: {
             product: true,
@@ -21,6 +27,33 @@ export class PurchaseOrdersService {
     });
 
     return orders.map((order) => this.formatOrder(order));
+  }
+
+  async statusSummary() {
+    const [statuses, counts] = await Promise.all([
+      this.mainStatusesService.findPurchaseOrderStatuses(),
+      this.prisma.purchaseOrder.groupBy({
+        by: ["status"],
+        _count: { status: true }
+      })
+    ]);
+    const countByStatus = new Map(counts.map((item) => [item.status, item._count.status]));
+    const total = counts.reduce((sum, item) => sum + item._count.status, 0);
+
+    return [
+      {
+        id: "all",
+        code: "all",
+        label: "All",
+        color: "default",
+        sortOrder: 0,
+        count: total
+      },
+      ...statuses.map((status) => ({
+        ...status,
+        count: countByStatus.get(status.code) ?? 0
+      }))
+    ];
   }
 
   async findOne(id: string) {
@@ -55,11 +88,14 @@ export class PurchaseOrdersService {
 
     const subtotal = dto.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
     const number = await this.nextPurchaseOrderNumber();
+    const waitingPickingStatus = await this.getStatusOrThrow("waiting_picking");
 
     const created = await this.prisma.purchaseOrder.create({
       data: {
         number,
         customerId: dto.customerId,
+        status: waitingPickingStatus.code,
+        mainStatusId: waitingPickingStatus.id,
         note: dto.note?.trim() || null,
         subtotal,
         total: subtotal,
@@ -132,16 +168,8 @@ export class PurchaseOrdersService {
     if (refreshed) {
       const isFullyReceived = refreshed.items.every((orderItem) => orderItem.serials.length >= orderItem.quantity);
 
-      if (isFullyReceived && refreshed.status !== "received") {
-        await this.prisma.purchaseOrder.update({
-          where: { id },
-          data: { status: "received" }
-        });
-      } else if (!isFullyReceived && refreshed.status === "draft") {
-        await this.prisma.purchaseOrder.update({
-          where: { id },
-          data: { status: "partial_received" }
-        });
+      if (isFullyReceived && refreshed.status !== "closed") {
+        await this.updateOrderStatus(id, "closed");
       }
     }
 
@@ -166,6 +194,7 @@ export class PurchaseOrdersService {
       where: { id },
       include: {
         customer: true,
+        mainStatus: true,
         items: {
           include: {
             product: true,
@@ -194,5 +223,27 @@ export class PurchaseOrdersService {
         }
       }))
     };
+  }
+
+  private async updateOrderStatus(id: string, code: string) {
+    const status = await this.getStatusOrThrow(code);
+
+    return this.prisma.purchaseOrder.update({
+      where: { id },
+      data: {
+        status: status.code,
+        mainStatusId: status.id
+      }
+    });
+  }
+
+  private async getStatusOrThrow(code: string) {
+    const status = await this.mainStatusesService.findPurchaseOrderStatus(code);
+
+    if (!status) {
+      throw new BadRequestException(`Purchase order status is not configured: ${code}`);
+    }
+
+    return status;
   }
 }

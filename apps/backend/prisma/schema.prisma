@@ -143,12 +143,32 @@ model DocumentCounter {
   @@map("document_counters")
 }
 
+model MainStatus {
+  id             String          @id @default(cuid())
+  module         String
+  code           String
+  label          String
+  description    String?
+  color          String          @default("blue")
+  sortOrder      Int             @default(0) @map("sort_order")
+  isActive       Boolean         @default(true) @map("is_active")
+  purchaseOrders PurchaseOrder[]
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@unique([module, code])
+  @@index([module, isActive, sortOrder])
+  @@map("main_statuses")
+}
+
 model PurchaseOrder {
   id          String              @id @default(cuid())
   number      String              @unique
   customerId  String              @map("customer_id")
   customer    Customer            @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  status      String              @default("draft")
+  status      String              @default("waiting_picking")
+  mainStatusId String?            @map("main_status_id")
+  mainStatus   MainStatus?        @relation(fields: [mainStatusId], references: [id], onDelete: SetNull)
   orderDate   DateTime            @default(now()) @map("order_date")
   note        String?
   subtotal    Decimal             @default(0) @db.Decimal(12, 2)

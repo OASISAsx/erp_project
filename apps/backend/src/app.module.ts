@@ -6,6 +6,7 @@ import { MasterDataModule } from "./master-data/master-data.module";
 import { MenuModule } from "./menu/menu.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
+import { MainStatusesModule } from "./main-statuses/main-statuses.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
     AuthModule,
     MasterDataModule,
     MenuModule,
+    MainStatusesModule,
     PurchaseOrdersModule,
   ],
 })

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreatePurchaseOrderDto, ReceiveSerialsDto } from "./dto";
 import { PurchaseOrdersService } from "./purchase-orders.service";
@@ -9,8 +9,15 @@ export class PurchaseOrdersController {
   constructor(private readonly purchaseOrdersService: PurchaseOrdersService) {}
 
   @Get()
-  findAll() {
-    return this.purchaseOrdersService.findAll();
+  findAll(@Query("status") status?: string | string[]) {
+    const statusCodes = Array.isArray(status) ? status : status ? [status] : undefined;
+
+    return this.purchaseOrdersService.findAll(statusCodes);
+  }
+
+  @Get("status-summary")
+  statusSummary() {
+    return this.purchaseOrdersService.statusSummary();
   }
 
   @Get(":id")

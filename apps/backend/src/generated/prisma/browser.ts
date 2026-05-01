@@ -63,6 +63,11 @@ export type Product = Prisma.ProductModel
  */
 export type DocumentCounter = Prisma.DocumentCounterModel
 /**
+ * Model MainStatus
+ * 
+ */
+export type MainStatus = Prisma.MainStatusModel
+/**
  * Model PurchaseOrder
  * 
  */

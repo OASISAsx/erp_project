@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
+  Checkbox,
   Form,
   Input,
   InputNumber,
@@ -25,43 +26,9 @@ import type { ColumnsType } from "antd/es/table";
 import { useSession } from "next-auth/react";
 import { MasterSectionShell } from "@/components/MasterSectionShell";
 import { apiClient, getAuthHeaders } from "@/lib/api";
+import type { Customer, Product, PurchaseForm, PurchaseOrder, StatusSummary } from "@/types/purchase";
 import shellStyles from "@/app/master/master.module.scss";
 import styles from "./page.module.scss";
-
-type Customer = { id: string; code: string; name: string };
-type Product = { id: string; sku: string; name: string; unit: string; price: number; stock: number };
-type OrderItem = {
-  id: string;
-  quantity: number;
-  unitPrice: number;
-  amount: number;
-  receivedQuantity: number;
-  remainingQuantity: number;
-  product: Product;
-  serials: { id: string; serialNumber: string; warehouseLocation?: string | null }[];
-};
-type PurchaseOrder = {
-  id: string;
-  number: string;
-  status: string;
-  note?: string | null;
-  total: number;
-  createdAt: string;
-  customer: Customer;
-  items: OrderItem[];
-};
-
-type FormItem = {
-  productId?: string;
-  quantity?: number;
-  unitPrice?: number;
-};
-
-type PurchaseForm = {
-  customerId: string;
-  note?: string;
-  items: FormItem[];
-};
 
 export default function PurchaseOrdersPage() {
   const { data: session, status } = useSession();
@@ -71,6 +38,8 @@ export default function PurchaseOrdersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
+  const [statusSummary, setStatusSummary] = useState<StatusSummary[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -83,15 +52,17 @@ export default function PurchaseOrdersPage() {
 
     setLoading(true);
     try {
-      const [customerResponse, productResponse, orderResponse] = await Promise.all([
+      const [customerResponse, productResponse, orderResponse, statusResponse] = await Promise.all([
         apiClient.get<Customer[]>("/master/customers", { headers: authHeaders }),
         apiClient.get<Product[]>("/master/products", { headers: authHeaders }),
-        apiClient.get<PurchaseOrder[]>("/purchase-orders", { headers: authHeaders })
+        apiClient.get<PurchaseOrder[]>("/purchase-orders", { headers: authHeaders }),
+        apiClient.get<StatusSummary[]>("/purchase-orders/status-summary", { headers: authHeaders })
       ]);
 
       setCustomers(customerResponse.data);
       setProducts(productResponse.data);
       setOrders(orderResponse.data);
+      setStatusSummary(statusResponse.data);
     } catch {
       messageApi.error("โหลดข้อมูลใบสั่งซื้อไม่สำเร็จ");
     } finally {
@@ -105,6 +76,28 @@ export default function PurchaseOrdersPage() {
   }, [authHeaders, status]);
 
   const productById = useMemo(() => new Map(products.map((product) => [product.id, product])), [products]);
+  const statusByCode = useMemo(
+    () => new Map(statusSummary.map((statusItem) => [statusItem.code, statusItem])),
+    [statusSummary]
+  );
+  const filteredOrders = useMemo(() => {
+    if (!selectedStatuses.length) {
+      return orders;
+    }
+
+    return orders.filter((order) => selectedStatuses.includes(order.status));
+  }, [orders, selectedStatuses]);
+
+  const toggleStatusFilter = (code: string, checked: boolean) => {
+    if (code === "all") {
+      setSelectedStatuses([]);
+      return;
+    }
+
+    setSelectedStatuses((current) =>
+      checked ? [...current, code] : current.filter((statusCode) => statusCode !== code)
+    );
+  };
 
   const openCreate = () => {
     form.setFieldsValue({ customerId: undefined as unknown as string, note: "", items: [{}] });
@@ -141,7 +134,11 @@ export default function PurchaseOrdersPage() {
     {
       title: "สถานะ",
       dataIndex: "status",
-      render: (value) => <Tag color={value === "received" ? "green" : value === "partial_received" ? "gold" : "blue"}>{value}</Tag>
+      render: (value, record) => {
+        const statusItem = record.mainStatus ?? statusByCode.get(value);
+
+        return <Tag color={statusItem?.color ?? "blue"}>{statusItem?.label ?? value}</Tag>;
+      }
     },
     { title: "ยอดรวม", dataIndex: "total", align: "right", render: (value) => Number(value).toLocaleString("th-TH") },
     {
@@ -173,7 +170,33 @@ export default function PurchaseOrdersPage() {
           </Button>
         </div>
 
-        <Table rowKey="id" columns={columns} dataSource={orders} loading={loading} pagination={{ pageSize: 8 }} />
+        <div className={styles.statusGrid}>
+          {statusSummary.map((statusItem) => {
+            const isAll = statusItem.code === "all";
+            const checked = isAll ? selectedStatuses.length === 0 : selectedStatuses.includes(statusItem.code);
+
+            return (
+              <button
+                className={`${styles.statusCard} ${checked ? styles.statusCardActive : ""}`}
+                key={statusItem.id}
+                type="button"
+                onClick={() => toggleStatusFilter(statusItem.code, !checked)}
+              >
+                <Checkbox
+                  checked={checked}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={(event) => toggleStatusFilter(statusItem.code, event.target.checked)}
+                />
+                <span className={styles.statusContent}>
+                  <span className={styles.statusLabel}>{statusItem.label}</span>
+                  <Tag color={statusItem.color}>{statusItem.count.toLocaleString("th-TH")}</Tag>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <Table rowKey="id" columns={columns} dataSource={filteredOrders} loading={loading} pagination={{ pageSize: 8 }} />
       </section>
 
       <Modal

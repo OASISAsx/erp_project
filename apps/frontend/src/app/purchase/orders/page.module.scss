@@ -11,6 +11,59 @@
   font-weight: 800;
 }
 
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.statusCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid #e6edf4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.statusCard:hover {
+  border-color: #9cc7ff;
+  box-shadow: 0 8px 22px rgb(15 38 51 / 8%);
+  transform: translateY(-1px);
+}
+
+.statusCardActive {
+  border-color: #1677ff;
+  background: #f5f9ff;
+}
+
+.statusContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.statusLabel {
+  overflow: hidden;
+  color: #0f2633;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) minmax(220px, 0.8fr);

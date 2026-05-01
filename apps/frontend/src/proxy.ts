@@ -10,8 +10,9 @@ export const config = {
     "/settings/:path*",
     "/master/:path*",
     "/purchase/:path*",
+    "/sales/:path*",
     "/warehouse/:path*",
     "/login",
-    "/register"
-  ]
+    "/register",
+  ],
 };

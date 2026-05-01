@@ -393,6 +393,7 @@ export const ModelName = {
   Customer: 'Customer',
   Product: 'Product',
   DocumentCounter: 'DocumentCounter',
+  MainStatus: 'MainStatus',
   PurchaseOrder: 'PurchaseOrder',
   PurchaseOrderItem: 'PurchaseOrderItem',
   ProductSerial: 'ProductSerial'
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "department" | "erpMenu" | "erpSubMenu" | "departmentMenuPermission" | "departmentSubMenuPermission" | "customer" | "product" | "documentCounter" | "purchaseOrder" | "purchaseOrderItem" | "productSerial"
+    modelProps: "user" | "department" | "erpMenu" | "erpSubMenu" | "departmentMenuPermission" | "departmentSubMenuPermission" | "customer" | "product" | "documentCounter" | "mainStatus" | "purchaseOrder" | "purchaseOrderItem" | "productSerial"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1081,6 +1082,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MainStatus: {
+      payload: Prisma.$MainStatusPayload<ExtArgs>
+      fields: Prisma.MainStatusFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MainStatusFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MainStatusFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        findFirst: {
+          args: Prisma.MainStatusFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MainStatusFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        findMany: {
+          args: Prisma.MainStatusFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>[]
+        }
+        create: {
+          args: Prisma.MainStatusCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        createMany: {
+          args: Prisma.MainStatusCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MainStatusCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>[]
+        }
+        delete: {
+          args: Prisma.MainStatusDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        update: {
+          args: Prisma.MainStatusUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        deleteMany: {
+          args: Prisma.MainStatusDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MainStatusUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MainStatusUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>[]
+        }
+        upsert: {
+          args: Prisma.MainStatusUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MainStatusPayload>
+        }
+        aggregate: {
+          args: Prisma.MainStatusAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMainStatus>
+        }
+        groupBy: {
+          args: Prisma.MainStatusGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MainStatusGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MainStatusCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MainStatusCountAggregateOutputType> | number
+        }
+      }
+    }
     PurchaseOrder: {
       payload: Prisma.$PurchaseOrderPayload<ExtArgs>
       fields: Prisma.PurchaseOrderFieldRefs
@@ -1466,11 +1541,28 @@ export const DocumentCounterScalarFieldEnum = {
 export type DocumentCounterScalarFieldEnum = (typeof DocumentCounterScalarFieldEnum)[keyof typeof DocumentCounterScalarFieldEnum]
 
 
+export const MainStatusScalarFieldEnum = {
+  id: 'id',
+  module: 'module',
+  code: 'code',
+  label: 'label',
+  description: 'description',
+  color: 'color',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MainStatusScalarFieldEnum = (typeof MainStatusScalarFieldEnum)[keyof typeof MainStatusScalarFieldEnum]
+
+
 export const PurchaseOrderScalarFieldEnum = {
   id: 'id',
   number: 'number',
   customerId: 'customerId',
   status: 'status',
+  mainStatusId: 'mainStatusId',
   orderDate: 'orderDate',
   note: 'note',
   subtotal: 'subtotal',
@@ -1736,6 +1828,7 @@ export type GlobalOmitConfig = {
   customer?: Prisma.CustomerOmit
   product?: Prisma.ProductOmit
   documentCounter?: Prisma.DocumentCounterOmit
+  mainStatus?: Prisma.MainStatusOmit
   purchaseOrder?: Prisma.PurchaseOrderOmit
   purchaseOrderItem?: Prisma.PurchaseOrderItemOmit
   productSerial?: Prisma.ProductSerialOmit
