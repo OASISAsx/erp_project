@@ -1,24 +1,7 @@
 import { create } from "zustand";
 import { apiClient, getAuthHeaders } from "@/lib/api";
-import type { Department, DepartmentForm, MenuPermission, UserRow } from "@/types/admin";
-
-type StoreState = {
-  departments: Department[];
-  users: UserRow[];
-  menuPermissions: MenuPermission[];
-  selectedDepartmentId?: string;
-  loading: boolean;
-  saving: boolean;
-  error?: string;
-  setSelectedDepartmentId: (departmentId?: string) => void;
-  setMenuPermission: (menuKey: string, canView: boolean) => void;
-  loadData: (accessToken?: string) => Promise<void>;
-  loadPermissions: (departmentId: string, accessToken?: string) => Promise<void>;
-  createDepartment: (values: DepartmentForm, accessToken?: string) => Promise<void>;
-  assignDepartment: (userId: string, departmentId: string | undefined, accessToken?: string) => Promise<void>;
-  saveMenuPermissions: (accessToken?: string) => Promise<void>;
-  clearError: () => void;
-};
+import { Department, MenuPermission, UserRow } from "@/types/admin.type";
+import { StoreMenu } from "@/types/menu.type";
 
 function getErrorMessage(error: unknown) {
   if (typeof error === "object" && error && "message" in error) {
@@ -28,37 +11,43 @@ function getErrorMessage(error: unknown) {
   return "เกิดข้อผิดพลาดในการเชื่อมต่อ API";
 }
 
-function setPermission(items: MenuPermission[], menuKey: string, canView: boolean): MenuPermission[] {
+function setPermission(
+  items: MenuPermission[],
+  menuKey: string,
+  canView: boolean,
+): MenuPermission[] {
   const nextItems = items.map((item) => {
     if (item.key === menuKey) {
       return {
         ...item,
         canView,
-        children: item.children?.map((child) => ({ ...child, canView }))
+        children: item.children?.map((child) => ({ ...child, canView })),
       };
     }
 
     return {
       ...item,
-      children: item.children ? setPermission(item.children, menuKey, canView) : undefined
+      children: item.children
+        ? setPermission(item.children, menuKey, canView)
+        : undefined,
     };
   });
 
   return nextItems.map((item) =>
     item.children?.some((child) => child.canView)
       ? { ...item, canView: true }
-      : item
+      : item,
   );
 }
 
 function collectVisibleKeys(items: MenuPermission[]): string[] {
   return items.flatMap((item) => [
     ...(item.canView ? [item.key] : []),
-    ...collectVisibleKeys(item.children ?? [])
+    ...collectVisibleKeys(item.children ?? []),
   ]);
 }
 
-export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
+export const useUserMenuPermissionStore = create<StoreMenu>((set, get) => ({
   departments: [],
   users: [],
   menuPermissions: [],
@@ -72,7 +61,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
 
   setMenuPermission(menuKey, canView) {
     set((state) => ({
-      menuPermissions: setPermission(state.menuPermissions, menuKey, canView)
+      menuPermissions: setPermission(state.menuPermissions, menuKey, canView),
     }));
   },
 
@@ -87,17 +76,18 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
       const headers = getAuthHeaders(accessToken);
       const [departmentResponse, userResponse] = await Promise.all([
         apiClient.get<Department[]>("/admin/departments", { headers }),
-        apiClient.get<UserRow[]>("/admin/users", { headers })
+        apiClient.get<UserRow[]>("/admin/users", { headers }),
       ]);
 
       const currentDepartmentId = get().selectedDepartmentId;
-      const nextDepartmentId = currentDepartmentId ?? departmentResponse.data[0]?.id;
+      const nextDepartmentId =
+        currentDepartmentId ?? departmentResponse.data[0]?.id;
 
       set({
         departments: departmentResponse.data,
         users: userResponse.data,
         selectedDepartmentId: nextDepartmentId,
-        loading: false
+        loading: false,
       });
     } catch (error) {
       set({ loading: false, error: getErrorMessage(error) });
@@ -112,10 +102,13 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
     set({ error: undefined });
 
     try {
-      const response = await apiClient.get<MenuPermission[]>("/admin/menu-permissions", {
-        headers: getAuthHeaders(accessToken),
-        params: { departmentId }
-      });
+      const response = await apiClient.get<MenuPermission[]>(
+        "/admin/menu-permissions",
+        {
+          headers: getAuthHeaders(accessToken),
+          params: { departmentId },
+        },
+      );
 
       set({ menuPermissions: response.data });
     } catch (error) {
@@ -132,7 +125,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
 
     try {
       await apiClient.post("/admin/departments", values, {
-        headers: getAuthHeaders(accessToken)
+        headers: getAuthHeaders(accessToken),
       });
       set({ saving: false });
       await get().loadData(accessToken);
@@ -153,7 +146,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
       await apiClient.patch(
         `/admin/users/${userId}/department`,
         { departmentId: departmentId ?? null },
-        { headers: getAuthHeaders(accessToken) }
+        { headers: getAuthHeaders(accessToken) },
       );
       set({ saving: false });
       await get().loadData(accessToken);
@@ -177,7 +170,7 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
       const response = await apiClient.put<MenuPermission[]>(
         `/admin/menu-permissions/${departmentId}`,
         { menuKeys },
-        { headers: getAuthHeaders(accessToken) }
+        { headers: getAuthHeaders(accessToken) },
       );
 
       set({ saving: false, menuPermissions: response.data });
@@ -189,5 +182,5 @@ export const useUserMenuPermissionStore = create<StoreState>((set, get) => ({
 
   clearError() {
     set({ error: undefined });
-  }
+  },
 }));

@@ -2,7 +2,12 @@
 
 import "@ant-design/v5-patch-for-react-19";
 import { useEffect } from "react";
-import { AppstoreOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  AppstoreOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import {
   Alert,
   Avatar,
@@ -16,13 +21,17 @@ import {
   Space,
   Table,
   Typography,
-  message
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useUserMenuPermissionStore } from "@/stores/userMenuPermissionStore";
-import type { DepartmentForm, MenuPermission, UserRow } from "@/types/admin";
+import type {
+  DepartmentForm,
+  MenuPermission,
+  UserRow,
+} from "@/types/admin.type";
 import styles from "./page.module.scss";
 
 export default function UserMenuPermissionsPage() {
@@ -45,7 +54,7 @@ export default function UserMenuPermissionsPage() {
     createDepartment,
     assignDepartment,
     saveMenuPermissions,
-    clearError
+    clearError,
   } = useUserMenuPermissionStore();
 
   const accessToken = session?.accessToken;
@@ -79,7 +88,10 @@ export default function UserMenuPermissionsPage() {
     }
   };
 
-  const updateUserDepartment = async (userId: string, departmentId?: string) => {
+  const updateUserDepartment = async (
+    userId: string,
+    departmentId?: string,
+  ) => {
     try {
       await assignDepartment(userId, departmentId, accessToken);
       messageApi.success("อัปเดตแผนกผู้ใช้แล้ว");
@@ -104,9 +116,14 @@ export default function UserMenuPermissionsPage() {
 
   const renderMenuPermission = (item: MenuPermission) => (
     <div className={styles.menuPermissionItem} key={item.key}>
-      <Checkbox checked={item.canView} onChange={(event) => setMenuPermission(item.key, event.target.checked)}>
+      <Checkbox
+        checked={item.canView}
+        onChange={(event) => setMenuPermission(item.key, event.target.checked)}
+      >
         <strong>{item.label}</strong>
-        <Typography.Text className={styles.menuDescription}>{item.description}</Typography.Text>
+        <Typography.Text className={styles.menuDescription}>
+          {item.description}
+        </Typography.Text>
       </Checkbox>
 
       {item.children?.length ? (
@@ -128,7 +145,7 @@ export default function UserMenuPermissionsPage() {
             {row.email}
           </Typography.Text>
         </div>
-      )
+      ),
     },
     { title: "สิทธิ์", dataIndex: "role", width: 130 },
     {
@@ -143,12 +160,12 @@ export default function UserMenuPermissionsPage() {
           style={{ width: "100%" }}
           options={departments.map((department) => ({
             value: department.id,
-            label: department.name
+            label: department.name,
           }))}
           onChange={(value) => updateUserDepartment(row.id, value)}
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -156,17 +173,26 @@ export default function UserMenuPermissionsPage() {
       {contextHolder}
       <Layout.Header className={styles.navbar}>
         <div className={styles.brand}>ERP</div>
-        <Button icon={<HomeOutlined />} onClick={() => router.push("/dashboard")}>
+        <Button
+          icon={<HomeOutlined />}
+          onClick={() => router.push("/dashboard")}
+        >
           แดชบอร์ด
         </Button>
-        <Button icon={<AppstoreOutlined />} onClick={() => router.push("/main-menu")}>
+        <Button
+          icon={<AppstoreOutlined />}
+          onClick={() => router.push("/main-menu")}
+        >
           เมนูหลัก
         </Button>
         {isSuperAdmin ? <Button type="primary">ตั้งสิทธิ์</Button> : null}
         <div className={styles.profile}>
           <Avatar icon={<UserOutlined />} />
           <span>{session?.user?.name ?? "Admin"}</span>
-          <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: "/login" })}>
+          <Button
+            icon={<LogoutOutlined />}
+            onClick={() => signOut({ callbackUrl: "/login" })}
+          >
             ออกจากระบบ
           </Button>
         </div>
@@ -189,9 +215,12 @@ export default function UserMenuPermissionsPage() {
         <>
           <div className={styles.pageHeader}>
             <div>
-              <Typography.Title level={3}>ตั้งค่าสิทธิ์เมนูผู้ใช้</Typography.Title>
+              <Typography.Title level={3}>
+                ตั้งค่าสิทธิ์เมนูผู้ใช้
+              </Typography.Title>
               <Typography.Text type="secondary">
-                กำหนดแผนกของผู้ใช้ และเลือกเมนูหลักกับเมนูย่อยที่แต่ละแผนกมองเห็น
+                กำหนดแผนกของผู้ใช้
+                และเลือกเมนูหลักกับเมนูย่อยที่แต่ละแผนกมองเห็น
               </Typography.Text>
             </div>
           </div>
@@ -212,10 +241,18 @@ export default function UserMenuPermissionsPage() {
             <div className={styles.toolbar}>
               <Form form={form} layout="vertical" onFinish={submitDepartment}>
                 <Space.Compact style={{ width: "100%" }}>
-                  <Form.Item name="code" rules={[{ required: true, message: "กรอกรหัสแผนก" }]} style={{ width: 110 }}>
+                  <Form.Item
+                    name="code"
+                    rules={[{ required: true, message: "กรอกรหัสแผนก" }]}
+                    style={{ width: 110 }}
+                  >
                     <Input placeholder="CODE" />
                   </Form.Item>
-                  <Form.Item name="name" rules={[{ required: true, message: "กรอกชื่อแผนก" }]} style={{ flex: 1 }}>
+                  <Form.Item
+                    name="name"
+                    rules={[{ required: true, message: "กรอกชื่อแผนก" }]}
+                    style={{ flex: 1 }}
+                  >
                     <Input placeholder="ชื่อแผนก" />
                   </Form.Item>
                   <Button type="primary" htmlType="submit" loading={saving}>
@@ -229,7 +266,7 @@ export default function UserMenuPermissionsPage() {
                 value={selectedDepartmentId}
                 options={departments.map((department) => ({
                   value: department.id,
-                  label: `${department.name} (${department.code})`
+                  label: `${department.name} (${department.code})`,
                 }))}
                 onChange={setSelectedDepartmentId}
               />
@@ -254,15 +291,24 @@ export default function UserMenuPermissionsPage() {
 
               <section className={styles.panel}>
                 <div className={styles.panelTitle}>
-                  <Typography.Title level={4}>เมนูที่แผนกมองเห็น</Typography.Title>
+                  <Typography.Title level={4}>
+                    เมนูที่แผนกมองเห็น
+                  </Typography.Title>
                   <Typography.Text type="secondary">
-                    ดึงทุกเมนูหลักพร้อม submenu จาก backend แล้วเลือกสิทธิ์ can_view ได้
+                    ดึงทุกเมนูหลักพร้อม submenu จาก backend แล้วเลือกสิทธิ์
+                    can_view ได้
                   </Typography.Text>
                 </div>
                 <div className={styles.menuPermissionList}>
                   {menuPermissions.map((item) => renderMenuPermission(item))}
                 </div>
-                <Button type="primary" block loading={saving} onClick={submitMenuPermissions} style={{ marginTop: 18 }}>
+                <Button
+                  type="primary"
+                  block
+                  loading={saving}
+                  onClick={submitMenuPermissions}
+                  style={{ marginTop: 18 }}
+                >
                   บันทึกสิทธิ์เมนู
                 </Button>
               </section>

@@ -8,20 +8,35 @@ import {
   InboxOutlined,
   QrcodeOutlined,
   ReloadOutlined,
-  SearchOutlined
+  SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Progress, Space, Table, Tag, Typography, message } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Progress,
+  Space,
+  Table,
+  Tag,
+  Typography,
+  message,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useSession } from "next-auth/react";
 import { MasterSectionShell } from "@/components/MasterSectionShell";
-import { apiClient, getAuthHeaders } from "@/lib/api";
-import type { ReceivingOrderItem, ReceivingPurchaseOrder, ScanTarget } from "@/types/warehouse";
+import { useWarehouseReceivingStore } from "@/stores/warehouseReceivingStore";
+import type {
+  ReceivingOrderItem,
+  ReceivingPurchaseOrder,
+  ScanTarget,
+} from "@/types/warehouse.type";
 import shellStyles from "@/app/master/master.module.scss";
 import styles from "./page.module.scss";
 
 const statusColor: Record<string, string> = {
   waiting_picking: "gold",
-  closed: "green"
+  closed: "green",
 };
 
 export default function WarehouseReceivingPage() {
@@ -29,37 +44,42 @@ export default function WarehouseReceivingPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [scanForm] = Form.useForm();
   const warehouseLocationInput = Form.useWatch("warehouseLocation", scanForm);
-  const authHeaders = useMemo(() => getAuthHeaders(session?.accessToken), [session?.accessToken]);
-  const [orders, setOrders] = useState<ReceivingPurchaseOrder[]>([]);
+  const {
+    orders,
+    loading,
+    saving,
+    loadOrders: loadStoreOrders,
+    receiveSerials,
+  } = useWarehouseReceivingStore();
   const [selectedOrderId, setSelectedOrderId] = useState<string>();
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [scanTarget, setScanTarget] = useState<ScanTarget | null>(null);
   const [serialDraft, setSerialDraft] = useState("");
   const [scannedSerials, setScannedSerials] = useState<string[]>([]);
 
   const loadOrders = async () => {
-    if (status !== "authenticated" || !authHeaders) {
+    if (status !== "authenticated" || !session?.accessToken) {
       return;
     }
 
-    setLoading(true);
     try {
-      const response = await apiClient.get<ReceivingPurchaseOrder[]>("/purchase-orders", { headers: authHeaders });
-      setOrders(response.data);
-      setSelectedOrderId((current) => current ?? response.data.find((order) => order.status !== "closed")?.id ?? response.data[0]?.id);
+      await loadStoreOrders(session.accessToken);
+      const latestOrders = useWarehouseReceivingStore.getState().orders;
+      setSelectedOrderId(
+        (current) =>
+          current ??
+          latestOrders.find((order) => order.status !== "closed")?.id ??
+          latestOrders[0]?.id,
+      );
     } catch {
-      messageApi.error("โหลดใบงานรับสินค้าไม่สำเร็จ");
-    } finally {
-      setLoading(false);
+      messageApi.error("Load receiving orders failed");
     }
   };
 
   useEffect(() => {
     loadOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authHeaders, status]);
+  }, [session?.accessToken, status]);
 
   const filteredOrders = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -69,13 +89,16 @@ export default function WarehouseReceivingPage() {
     }
 
     return orders.filter((order) =>
-      [order.number, order.customer.name, order.customer.code].some((value) => value.toLowerCase().includes(keyword))
+      [order.number, order.customer.name, order.customer.code].some((value) =>
+        value.toLowerCase().includes(keyword),
+      ),
     );
   }, [orders, search]);
 
   const selectedOrder = useMemo(
-    () => orders.find((order) => order.id === selectedOrderId) ?? filteredOrders[0],
-    [filteredOrders, orders, selectedOrderId]
+    () =>
+      orders.find((order) => order.id === selectedOrderId) ?? filteredOrders[0],
+    [filteredOrders, orders, selectedOrderId],
   );
 
   const orderSummary = useMemo(() => {
@@ -83,15 +106,22 @@ export default function WarehouseReceivingPage() {
       return { total: 0, received: 0, remaining: 0, percent: 0 };
     }
 
-    const total = selectedOrder.items.reduce((sum, item) => sum + item.quantity, 0);
-    const received = selectedOrder.items.reduce((sum, item) => sum + item.receivedQuantity, 0);
+    const total = selectedOrder.items.reduce(
+      (sum, item) => sum + item.quantity,
+      0,
+    );
+    const received = selectedOrder.items.reduce(
+      (sum, item) => sum + item.receivedQuantity,
+      0,
+    );
     const remaining = Math.max(total - received, 0);
     const percent = total ? Math.round((received / total) * 100) : 0;
 
     return { total, received, remaining, percent };
   }, [selectedOrder]);
 
-  const scannerName = session?.user?.name ?? session?.user?.email ?? "Current user";
+  const scannerName =
+    session?.user?.name ?? session?.user?.email ?? "Current user";
   const scannedSerialRows = useMemo(
     () =>
       scannedSerials.map((serialNumber, index) => ({
@@ -99,13 +129,18 @@ export default function WarehouseReceivingPage() {
         index: index + 1,
         serialNumber,
         scannedBy: scannerName,
-        warehouseLocation: String(warehouseLocationInput ?? "").trim() || "-"
+        warehouseLocation: String(warehouseLocationInput ?? "").trim() || "-",
       })),
-    [scannedSerials, scannerName, warehouseLocationInput]
+    [scannedSerials, scannerName, warehouseLocationInput],
   );
-  const isScanOverLimit = Boolean(scanTarget && scannedSerialRows.length > scanTarget.item.remainingQuantity);
+  const isScanOverLimit = Boolean(
+    scanTarget && scannedSerialRows.length > scanTarget.item.remainingQuantity,
+  );
 
-  const openScan = (order: ReceivingPurchaseOrder, item: ReceivingOrderItem) => {
+  const openScan = (
+    order: ReceivingPurchaseOrder,
+    item: ReceivingOrderItem,
+  ) => {
     scanForm.setFieldsValue({ warehouseLocation: "WH-A1" });
     setSerialDraft("");
     setScannedSerials([]);
@@ -125,8 +160,13 @@ export default function WarehouseReceivingPage() {
       return;
     }
 
-    if (scanTarget && scannedSerials.length >= scanTarget.item.remainingQuantity) {
-      messageApi.warning(`รับได้อีก ${scanTarget.item.remainingQuantity} SN เท่านั้น`);
+    if (
+      scanTarget &&
+      scannedSerials.length >= scanTarget.item.remainingQuantity
+    ) {
+      messageApi.warning(
+        `รับได้อีก ${scanTarget.item.remainingQuantity} SN เท่านั้น`,
+      );
       return;
     }
 
@@ -135,7 +175,7 @@ export default function WarehouseReceivingPage() {
   };
 
   const submitSerials = async () => {
-    if (!authHeaders || !scanTarget) {
+    if (!session?.accessToken || !scanTarget) {
       return;
     }
 
@@ -148,32 +188,31 @@ export default function WarehouseReceivingPage() {
     }
 
     if (serialNumbers.length > scanTarget.item.remainingQuantity) {
-      messageApi.warning(`รับได้อีก ${scanTarget.item.remainingQuantity} SN เท่านั้น`);
+      messageApi.warning(
+        `รับได้อีก ${scanTarget.item.remainingQuantity} SN เท่านั้น`,
+      );
       return;
     }
-
-    setSaving(true);
     try {
-      const response = await apiClient.post<ReceivingPurchaseOrder>(
-        `/purchase-orders/${scanTarget.order.id}/serials`,
+      const received = await receiveSerials(
         {
+          orderId: scanTarget.order.id,
           purchaseOrderItemId: scanTarget.item.id,
           serialNumbers,
-          warehouseLocation: values.warehouseLocation
+          warehouseLocation: values.warehouseLocation,
         },
-        { headers: authHeaders }
+        session.accessToken,
       );
 
-      messageApi.success(`รับสินค้าเข้าแล้ว ${serialNumbers.length} SN`);
+      messageApi.success(`Received ${serialNumbers.length} SN`);
       setScanTarget(null);
       setSerialDraft("");
       setScannedSerials([]);
-      setOrders((current) => current.map((order) => (order.id === response.data.id ? response.data : order)));
-      setSelectedOrderId(response.data.id);
+      if (received) {
+        setSelectedOrderId(received.id);
+      }
     } catch {
-      messageApi.error("รับ SN ไม่สำเร็จ");
-    } finally {
-      setSaving(false);
+      messageApi.error("Receive SN failed");
     }
   };
 
@@ -187,11 +226,15 @@ export default function WarehouseReceivingPage() {
     {
       title: "ใบงาน",
       render: (_, order) => (
-        <button className={styles.orderButton} type="button" onClick={() => setSelectedOrderId(order.id)}>
+        <button
+          className={styles.orderButton}
+          type="button"
+          onClick={() => setSelectedOrderId(order.id)}
+        >
           <span>{order.number}</span>
           <small>{order.customer.name}</small>
         </button>
-      )
+      ),
     },
     {
       title: "สถานะ",
@@ -201,8 +244,8 @@ export default function WarehouseReceivingPage() {
         <Tag color={order.mainStatus?.color ?? statusColor[value] ?? "default"}>
           {order.mainStatus?.label ?? value}
         </Tag>
-      )
-    }
+      ),
+    },
   ];
 
   const itemColumns: ColumnsType<ReceivingOrderItem> = [
@@ -213,21 +256,31 @@ export default function WarehouseReceivingPage() {
           <strong>{item.product.sku}</strong>
           <span>{item.product.name}</span>
         </div>
-      )
+      ),
     },
     { title: "จำนวน PO", dataIndex: "quantity", align: "right", width: 110 },
-    { title: "รับแล้ว", dataIndex: "receivedQuantity", align: "right", width: 110 },
+    {
+      title: "รับแล้ว",
+      dataIndex: "receivedQuantity",
+      align: "right",
+      width: 110,
+    },
     {
       title: "ค้างรับ",
       dataIndex: "remainingQuantity",
       align: "right",
       width: 110,
-      render: (value) => <Tag color={value > 0 ? "gold" : "green"}>{value}</Tag>
+      render: (value) => (
+        <Tag color={value > 0 ? "gold" : "green"}>{value}</Tag>
+      ),
     },
     {
       title: "SN ล่าสุด",
       width: 220,
-      render: (_, item) => item.serials.slice(-2).map((serial) => <Tag key={serial.id}>{serial.serialNumber}</Tag>)
+      render: (_, item) =>
+        item.serials
+          .slice(-2)
+          .map((serial) => <Tag key={serial.id}>{serial.serialNumber}</Tag>),
     },
     {
       title: "",
@@ -242,18 +295,21 @@ export default function WarehouseReceivingPage() {
         >
           สแกน SN
         </Button>
-      )
-    }
+      ),
+    },
   ];
 
-  const scannedSerialColumns: ColumnsType<(typeof scannedSerialRows)[number]> = [
-    { title: "#", dataIndex: "index", width: 56 },
-    { title: "Serial Number", dataIndex: "serialNumber" },
-    { title: "User ที่สแกน", dataIndex: "scannedBy", width: 180 },
-    { title: "ตำแหน่งคลัง", dataIndex: "warehouseLocation", width: 140 }
-  ];
+  const scannedSerialColumns: ColumnsType<(typeof scannedSerialRows)[number]> =
+    [
+      { title: "#", dataIndex: "index", width: 56 },
+      { title: "Serial Number", dataIndex: "serialNumber" },
+      { title: "User ที่สแกน", dataIndex: "scannedBy", width: 180 },
+      { title: "ตำแหน่งคลัง", dataIndex: "warehouseLocation", width: 140 },
+    ];
 
-  const scannedSerialTableColumns: ColumnsType<(typeof scannedSerialRows)[number]> = [
+  const scannedSerialTableColumns: ColumnsType<
+    (typeof scannedSerialRows)[number]
+  > = [
     { title: "#", dataIndex: "index", width: 56 },
     { title: "Serial Number", dataIndex: "serialNumber" },
     { title: "Scanned by", dataIndex: "scannedBy", width: 180 },
@@ -267,10 +323,14 @@ export default function WarehouseReceivingPage() {
           danger
           size="small"
           icon={<DeleteOutlined />}
-          onClick={() => setScannedSerials((current) => current.filter((serial) => serial !== record.serialNumber))}
+          onClick={() =>
+            setScannedSerials((current) =>
+              current.filter((serial) => serial !== record.serialNumber),
+            )
+          }
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -279,9 +339,15 @@ export default function WarehouseReceivingPage() {
       <div className={styles.header}>
         <div>
           <Typography.Title level={3}>รับสินค้าเข้าคลัง</Typography.Title>
-          <Typography.Text type="secondary">เลือกใบงาน PO แล้วสแกน SN แยกตามสินค้าเพื่อบันทึกเข้าคลัง</Typography.Text>
+          <Typography.Text type="secondary">
+            เลือกใบงาน PO แล้วสแกน SN แยกตามสินค้าเพื่อบันทึกเข้าคลัง
+          </Typography.Text>
         </div>
-        <Button icon={<ReloadOutlined />} onClick={loadOrders} loading={loading}>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={loadOrders}
+          loading={loading}
+        >
           โหลดใหม่
         </Button>
       </div>
@@ -308,7 +374,9 @@ export default function WarehouseReceivingPage() {
             dataSource={filteredOrders}
             loading={loading}
             pagination={{ pageSize: 8 }}
-            rowClassName={(order) => (order.id === selectedOrder?.id ? styles.selectedRow : "")}
+            rowClassName={(order) =>
+              order.id === selectedOrder?.id ? styles.selectedRow : ""
+            }
           />
         </section>
 
@@ -317,9 +385,16 @@ export default function WarehouseReceivingPage() {
             <>
               <div className={styles.detailHeader}>
                 <div>
-                  <Typography.Text type="secondary">ใบงานรับสินค้า</Typography.Text>
-                  <Typography.Title level={4}>{selectedOrder.number}</Typography.Title>
-                  <Typography.Text>{selectedOrder.customer.code} - {selectedOrder.customer.name}</Typography.Text>
+                  <Typography.Text type="secondary">
+                    ใบงานรับสินค้า
+                  </Typography.Text>
+                  <Typography.Title level={4}>
+                    {selectedOrder.number}
+                  </Typography.Title>
+                  <Typography.Text>
+                    {selectedOrder.customer.code} -{" "}
+                    {selectedOrder.customer.name}
+                  </Typography.Text>
                 </div>
                 <div className={styles.progressBox}>
                   <Progress
@@ -328,18 +403,27 @@ export default function WarehouseReceivingPage() {
                     size={96}
                     strokeWidth={12}
                     strokeLinecap="round"
-                    strokeColor={orderSummary.percent >= 100 ? "#1f9d55" : "#1677ff"}
+                    strokeColor={
+                      orderSummary.percent >= 100 ? "#1f9d55" : "#1677ff"
+                    }
                     trailColor="#dbe7f3"
                     status={orderSummary.percent >= 100 ? "success" : "active"}
                   />
                   <div>
-                    <strong>{orderSummary.received}/{orderSummary.total}</strong>
+                    <strong>
+                      {orderSummary.received}/{orderSummary.total}
+                    </strong>
                     <span>รับแล้ว เหลือ {orderSummary.remaining}</span>
                   </div>
                 </div>
               </div>
 
-              <Table rowKey="id" columns={itemColumns} dataSource={selectedOrder.items} pagination={false} />
+              <Table
+                rowKey="id"
+                columns={itemColumns}
+                dataSource={selectedOrder.items}
+                pagination={false}
+              />
             </>
           ) : (
             <div className={styles.emptyState}>
@@ -357,7 +441,9 @@ export default function WarehouseReceivingPage() {
         okText="รับเข้าคลัง"
         cancelText="ยกเลิก"
         confirmLoading={saving}
-        okButtonProps={{ disabled: !scannedSerialRows.length || isScanOverLimit }}
+        okButtonProps={{
+          disabled: !scannedSerialRows.length || isScanOverLimit,
+        }}
         onCancel={closeScanModal}
         onOk={submitSerials}
       >
@@ -365,8 +451,13 @@ export default function WarehouseReceivingPage() {
           <div className={styles.scanSummary}>
             <CheckCircleOutlined />
             <div>
-              <strong>{scanTarget.item.product.sku} - {scanTarget.item.product.name}</strong>
-              <span>ค้างรับ {scanTarget.item.remainingQuantity} จาก {scanTarget.item.quantity} ชิ้น</span>
+              <strong>
+                {scanTarget.item.product.sku} - {scanTarget.item.product.name}
+              </strong>
+              <span>
+                ค้างรับ {scanTarget.item.remainingQuantity} จาก{" "}
+                {scanTarget.item.quantity} ชิ้น
+              </span>
             </div>
           </div>
         ) : null}
@@ -390,8 +481,14 @@ export default function WarehouseReceivingPage() {
         <div className={styles.scanPreviewHeader}>
           <Typography.Text strong>รายการที่สแกนก่อนบันทึก</Typography.Text>
           <Space>
-            <Tag color={isScanOverLimit ? "red" : "blue"}>{scannedSerialRows.length} SN</Tag>
-            {scanTarget ? <Tag color="gold">ค้างรับ {scanTarget.item.remainingQuantity}</Tag> : null}
+            <Tag color={isScanOverLimit ? "red" : "blue"}>
+              {scannedSerialRows.length} SN
+            </Tag>
+            {scanTarget ? (
+              <Tag color="gold">
+                ค้างรับ {scanTarget.item.remainingQuantity}
+              </Tag>
+            ) : null}
           </Space>
         </div>
         {isScanOverLimit ? (

@@ -2,7 +2,7 @@
 
 import { Tag } from "antd";
 import { MasterCrudPage } from "@/components/MasterCrudPage";
-import type { MasterField } from "@/types/master";
+import type { MasterField } from "@/types/master.type";
 
 const fields: MasterField[] = [
   { name: "sku", label: "SKU", required: true, width: 140 },
@@ -15,16 +15,25 @@ const fields: MasterField[] = [
     type: "number",
     required: true,
     width: 130,
-    render: (value) => Number(value ?? 0).toLocaleString("th-TH", { minimumFractionDigits: 2 })
+    render: (value) =>
+      Number(value ?? 0).toLocaleString("th-TH", { minimumFractionDigits: 2 }),
   },
-  { name: "stock", label: "คงเหลือ", type: "number", required: true, width: 110 },
+  {
+    name: "stock",
+    label: "คงเหลือ",
+    type: "number",
+    required: true,
+    width: 110,
+  },
   {
     name: "isActive",
     label: "สถานะ",
     type: "switch",
     width: 110,
-    render: (value) => <Tag color={value ? "green" : "default"}>{value ? "ใช้งาน" : "ปิด"}</Tag>
-  }
+    render: (value) => (
+      <Tag color={value ? "green" : "default"}>{value ? "ใช้งาน" : "ปิด"}</Tag>
+    ),
+  },
 ];
 
 export default function ProductsPage() {

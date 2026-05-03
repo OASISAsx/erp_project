@@ -6,7 +6,7 @@ import { Button, Form, Input, Typography, message } from "antd";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { apiClient } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 import styles from "@/app/login/page.module.scss";
 
 type RegisterForm = {
@@ -18,12 +18,13 @@ type RegisterForm = {
 export default function RegisterAntdPanel() {
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
+  const register = useAuthStore((state) => state.register);
 
   const onFinish = async (values: RegisterForm) => {
     setLoading(true);
 
     try {
-      await apiClient.post("/auth/register", values);
+      await register(values);
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,

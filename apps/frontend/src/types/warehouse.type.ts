@@ -1,4 +1,4 @@
-import type { Customer } from "./purchase";
+import type { Customer } from "./purchase.type";
 
 export type ReceivingProduct = {
   id: string;

@@ -16,7 +16,7 @@ import {
 import { Avatar, Button, Empty, Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./page.module.scss";
 
 type MenuItem = {
@@ -35,6 +35,7 @@ const iconByKey: Record<string, React.ReactNode> = {
 
 export default function MainMenuPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const [modules, setModules] = useState<MenuItem[]>([]);
   const { data: session, status } = useSession();
   const isSuperAdmin = session?.user?.role === "super_admin";
@@ -50,10 +51,18 @@ export default function MainMenuPage() {
     fetch(`${apiUrl}/menu`, {
       headers: { Authorization: `Bearer ${session.accessToken}` },
     })
-      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((response) => {
+        if (response.status === 401) {
+          return signOut({
+            callbackUrl: `/login?callbackUrl=${encodeURIComponent(pathname)}`,
+          }).then(() => Promise.reject());
+        }
+
+        return response.ok ? response.json() : Promise.reject();
+      })
       .then((data: MenuItem[]) => setModules(data))
       .catch(() => setModules([]));
-  }, [session?.accessToken, status]);
+  }, [pathname, session?.accessToken, status]);
 
   const navItems: MenuProps["items"] = [
     { key: "dashboard", icon: <HomeOutlined />, label: "แดชบอร์ด" },

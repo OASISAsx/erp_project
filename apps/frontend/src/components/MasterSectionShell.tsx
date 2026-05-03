@@ -17,7 +17,7 @@ import type { MenuProps } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "@/app/master/master.module.scss";
-import type { MenuItem } from "@/types/menu";
+import type { MenuItem } from "@/types/menu.type";
 
 type MasterSectionShellProps = {
   children: ReactNode;
@@ -59,10 +59,18 @@ export function MasterSectionShell({
     fetch(`${apiUrl}/menu`, {
       headers: { Authorization: `Bearer ${session.accessToken}` },
     })
-      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((response) => {
+        if (response.status === 401) {
+          return signOut({
+            callbackUrl: `/login?callbackUrl=${encodeURIComponent(pathname)}`,
+          }).then(() => Promise.reject());
+        }
+
+        return response.ok ? response.json() : Promise.reject();
+      })
       .then((data: MenuItem[]) => setMenus(data))
       .catch(() => setMenus([]));
-  }, [session?.accessToken, status]);
+  }, [pathname, session?.accessToken, status]);
 
   const mainMenu = useMemo(
     () => menus.find((item) => item.key === mainMenuKey),

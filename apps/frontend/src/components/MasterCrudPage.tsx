@@ -1,8 +1,7 @@
 "use client";
 
 import "@ant-design/v5-patch-for-react-19";
-import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -15,12 +14,12 @@ import {
   Switch,
   Table,
   Typography,
-  message
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useSession } from "next-auth/react";
-import { apiClient, getAuthHeaders } from "@/lib/api";
-import type { MasterField, MasterRecord } from "@/types/master";
+import { useMasterDataStore } from "@/stores/masterDataStore";
+import type { MasterField, MasterRecord } from "@/types/master.type";
 import styles from "@/app/master/master.module.scss";
 import { MasterSectionShell } from "./MasterSectionShell";
 
@@ -39,42 +38,41 @@ export function MasterCrudPage({
   endpoint,
   createLabel,
   fields,
-  initialValues
+  initialValues,
 }: MasterCrudPageProps) {
   const { data: session, status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
-  const [records, setRecords] = useState<MasterRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<MasterRecord | null>(null);
-
-  const authHeaders = useMemo(() => getAuthHeaders(session?.accessToken), [session?.accessToken]);
+  const {
+    records,
+    loading,
+    saving,
+    loadRecords: loadStoreRecords,
+    createRecord,
+    updateRecord,
+    deleteRecord,
+    clearRecords,
+  } = useMasterDataStore();
 
   const loadRecords = async () => {
-    if (status !== "authenticated" || !authHeaders) {
-      setRecords([]);
+    if (status !== "authenticated" || !session?.accessToken) {
+      clearRecords();
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await apiClient.get<MasterRecord[]>(endpoint, { headers: authHeaders });
-      setRecords(response.data);
+      await loadStoreRecords(endpoint, session.accessToken);
     } catch {
-      messageApi.error("โหลดข้อมูลไม่สำเร็จ");
-      setRecords([]);
-    } finally {
-      setLoading(false);
+      messageApi.error("Load failed");
     }
   };
 
   useEffect(() => {
     loadRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authHeaders, endpoint, status]);
+  }, [endpoint, session?.accessToken, status]);
 
   const openCreate = () => {
     setEditingRecord(null);
@@ -89,38 +87,40 @@ export function MasterCrudPage({
   };
 
   const submit = async () => {
-    if (!authHeaders) {
+    if (!session?.accessToken) {
       return;
     }
 
     const values = await form.validateFields();
-    setSaving(true);
 
     try {
       if (editingRecord) {
-        await apiClient.patch(`${endpoint}/${editingRecord.id}`, values, { headers: authHeaders });
+        await updateRecord(
+          endpoint,
+          editingRecord.id,
+          values,
+          session.accessToken,
+        );
         messageApi.success("แก้ไขข้อมูลแล้ว");
       } else {
-        await apiClient.post(endpoint, values, { headers: authHeaders });
+        await createRecord(endpoint, values, session.accessToken);
         messageApi.success("สร้างข้อมูลแล้ว");
       }
 
       setModalOpen(false);
       await loadRecords();
     } catch {
-      messageApi.error("บันทึกข้อมูลไม่สำเร็จ");
-    } finally {
-      setSaving(false);
+      messageApi.error("Save failed");
     }
   };
 
   const remove = async (record: MasterRecord) => {
-    if (!authHeaders) {
+    if (!session?.accessToken) {
       return;
     }
 
     try {
-      await apiClient.delete(`${endpoint}/${record.id}`, { headers: authHeaders });
+      await deleteRecord(endpoint, record.id, session.accessToken);
       messageApi.success("ลบข้อมูลแล้ว");
       await loadRecords();
     } catch {
@@ -134,7 +134,11 @@ export function MasterCrudPage({
       dataIndex: field.name,
       width: field.width,
       render: (value: unknown, record: MasterRecord) =>
-        field.render ? field.render(value, record) : value ? String(value) : "-"
+        field.render
+          ? field.render(value, record)
+          : value
+            ? String(value)
+            : "-",
     })),
     {
       title: "",
@@ -144,12 +148,17 @@ export function MasterCrudPage({
       render: (_, record) => (
         <Space>
           <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
-          <Popconfirm title="ลบข้อมูลนี้?" okText="ลบ" cancelText="ยกเลิก" onConfirm={() => remove(record)}>
+          <Popconfirm
+            title="ลบข้อมูลนี้?"
+            okText="ลบ"
+            cancelText="ยกเลิก"
+            onConfirm={() => remove(record)}
+          >
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -192,7 +201,11 @@ export function MasterCrudPage({
               name={field.name}
               label={field.label}
               valuePropName={field.type === "switch" ? "checked" : "value"}
-              rules={field.required ? [{ required: true, message: `กรุณากรอก${field.label}` }] : undefined}
+              rules={
+                field.required
+                  ? [{ required: true, message: `กรุณากรอก${field.label}` }]
+                  : undefined
+              }
             >
               {field.type === "textarea" ? (
                 <Input.TextArea rows={3} />
