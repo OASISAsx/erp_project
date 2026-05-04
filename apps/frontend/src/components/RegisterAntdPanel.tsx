@@ -17,6 +17,7 @@ type RegisterForm = {
 
 export default function RegisterAntdPanel() {
   const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm<RegisterForm>();
   const [loading, setLoading] = useState(false);
   const register = useAuthStore((state) => state.register);
 
@@ -50,7 +51,7 @@ export default function RegisterAntdPanel() {
       <Typography.Title level={2}>สมัครสมาชิก</Typography.Title>
       <Typography.Text type="secondary">สร้างบัญชีผู้ใช้สำหรับระบบ ERP</Typography.Text>
 
-      <Form<RegisterForm> layout="vertical" className={styles.form} onFinish={onFinish}>
+      <Form<RegisterForm> form={form} layout="vertical" className={styles.form} onFinish={onFinish}>
         <Form.Item label="ชื่อ" name="name" rules={[{ required: true, message: "กรุณากรอกชื่อ" }]}>
           <Input prefix={<UserOutlined />} size="large" />
         </Form.Item>

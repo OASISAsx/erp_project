@@ -29,8 +29,11 @@ type MasterCrudPageProps = {
   endpoint: string;
   createLabel: string;
   fields: MasterField[];
-  initialValues: Record<string, unknown>;
+  initialValues: MasterFormValues;
 };
+
+type MasterFormValue = string | number | boolean | null | undefined;
+type MasterFormValues = Record<string, MasterFormValue>;
 
 export function MasterCrudPage({
   title,
@@ -42,7 +45,7 @@ export function MasterCrudPage({
 }: MasterCrudPageProps) {
   const { data: session, status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<MasterFormValues>();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<MasterRecord | null>(null);
   const {
@@ -82,7 +85,12 @@ export function MasterCrudPage({
 
   const openEdit = (record: MasterRecord) => {
     setEditingRecord(record);
-    form.setFieldsValue(record);
+    form.setFieldsValue(
+      fields.reduce<MasterFormValues>((values, field) => {
+        values[field.name] = record[field.name] as MasterFormValue;
+        return values;
+      }, {}),
+    );
     setModalOpen(true);
   };
 

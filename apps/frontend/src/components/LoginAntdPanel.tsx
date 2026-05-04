@@ -15,6 +15,7 @@ type LoginForm = {
 
 export default function LoginAntdPanel() {
   const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm<LoginForm>();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: LoginForm) => {
@@ -46,6 +47,7 @@ export default function LoginAntdPanel() {
       <Typography.Text type="secondary">ใช้บัญชีผู้ดูแลระบบเพื่อเริ่มต้น</Typography.Text>
 
       <Form<LoginForm>
+        form={form}
         layout="vertical"
         className={styles.form}
         initialValues={{ email: "admin@erp.local", password: "admin123" }}

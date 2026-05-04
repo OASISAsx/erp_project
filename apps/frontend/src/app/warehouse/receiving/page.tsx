@@ -39,11 +39,17 @@ const statusColor: Record<string, string> = {
   closed: "green",
 };
 
+type ScanForm = {
+  warehouseLocation?: string;
+  serialDraft?: string;
+};
+
 export default function WarehouseReceivingPage() {
   const { data: session, status } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
-  const [scanForm] = Form.useForm();
+  const [scanForm] = Form.useForm<ScanForm>();
   const warehouseLocationInput = Form.useWatch("warehouseLocation", scanForm);
+  const serialDraft = Form.useWatch("serialDraft", scanForm) ?? "";
   const {
     orders,
     loading,
@@ -54,7 +60,6 @@ export default function WarehouseReceivingPage() {
   const [selectedOrderId, setSelectedOrderId] = useState<string>();
   const [search, setSearch] = useState("");
   const [scanTarget, setScanTarget] = useState<ScanTarget | null>(null);
-  const [serialDraft, setSerialDraft] = useState("");
   const [scannedSerials, setScannedSerials] = useState<string[]>([]);
 
   const loadOrders = async () => {
@@ -141,8 +146,7 @@ export default function WarehouseReceivingPage() {
     order: ReceivingPurchaseOrder,
     item: ReceivingOrderItem,
   ) => {
-    scanForm.setFieldsValue({ warehouseLocation: "WH-A1" });
-    setSerialDraft("");
+    scanForm.setFieldsValue({ warehouseLocation: "WH-A1", serialDraft: "" });
     setScannedSerials([]);
     setScanTarget({ order, item });
   };
@@ -156,7 +160,7 @@ export default function WarehouseReceivingPage() {
 
     if (scannedSerials.includes(serialNumber)) {
       messageApi.warning("SN นี้อยู่ในรายการแล้ว");
-      setSerialDraft("");
+      scanForm.setFieldValue("serialDraft", "");
       return;
     }
 
@@ -171,7 +175,7 @@ export default function WarehouseReceivingPage() {
     }
 
     setScannedSerials((current) => [...current, serialNumber]);
-    setSerialDraft("");
+    scanForm.setFieldValue("serialDraft", "");
   };
 
   const submitSerials = async () => {
@@ -206,7 +210,7 @@ export default function WarehouseReceivingPage() {
 
       messageApi.success(`Received ${serialNumbers.length} SN`);
       setScanTarget(null);
-      setSerialDraft("");
+      scanForm.resetFields();
       setScannedSerials([]);
       if (received) {
         setSelectedOrderId(received.id);
@@ -218,7 +222,7 @@ export default function WarehouseReceivingPage() {
 
   const closeScanModal = () => {
     setScanTarget(null);
-    setSerialDraft("");
+    scanForm.resetFields();
     setScannedSerials([]);
   };
 
@@ -465,12 +469,10 @@ export default function WarehouseReceivingPage() {
           <Form.Item name="warehouseLocation" label="ตำแหน่งคลัง">
             <Input placeholder="เช่น WH-A1" />
           </Form.Item>
-          <Form.Item label="Serial Number">
+          <Form.Item name="serialDraft" label="Serial Number">
             <Input
               autoFocus
-              value={serialDraft}
               placeholder="Scan or type SN, then press Enter"
-              onChange={(event) => setSerialDraft(event.target.value)}
               onPressEnter={(event) => {
                 event.preventDefault();
                 pushSerialDraft();
